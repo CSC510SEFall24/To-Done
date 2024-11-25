@@ -31,7 +31,7 @@ class List(models.Model):
     list_tag = models.CharField(max_length=50, default='none')
     user_id = models.ForeignKey(
         User, on_delete=models.CASCADE, null=True, blank=True)
-    is_shared = models.BooleanField(default=False)
+    is_shared = models.BooleanField(default=False) #progress (sharing list between users)
 
     objects = models.Manager()
 
@@ -96,7 +96,7 @@ class TemplateItem(models.Model):
     def __str__(self):
         return "%s" % self.item_text
 
-
+#shared users for a list
 class SharedUsers(models.Model):
     list_id = models.ForeignKey(List, on_delete=models.CASCADE)
     shared_user = models.CharField(max_length=200)
@@ -106,7 +106,7 @@ class SharedUsers(models.Model):
     def __str__(self):
         return "%s" % str(self.list_id)
 
-
+#shared or common lists
 class SharedList(models.Model):
     user = models.ForeignKey(
         User, on_delete=models.CASCADE, null=True, blank=True)
