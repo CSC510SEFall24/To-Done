@@ -583,6 +583,14 @@
                     <label for="{{ "InputColor_"|addstr:list.id }}">Color Tag</label>
                     <input type="color" class="form-control" id="{{ "InputColor_"|addstr:list.id }}" value="#f9f9f9">
                 </div>
+                <div class="form-group">
+                    <label for="{{ "InputPriority_"|addstr:list.id }}">Priority</label>
+                    <select id="{{ "InputPriority_"|addstr:list.id }}" class="form-control">
+                        <option value="Low" selected>Low</option>
+                        <option value="Medium">Medium</option>
+                        <option value="High">High</option>
+                    </select>
+                </div>
             </form>
             <div>
                 <span onclick="newElement({{ list.id }})" class="addBtn">Add</span>
@@ -609,6 +617,13 @@
                                 {% endif %}
                             <label for="{{ "ListItem_"|addstr:list_item.id }}" class = "text-right">Start date: {{ list_item.created_on }}</label>
                             <label for="{{ "ListItem_"|addstr:list_item.id }}" class="due-date" style="color:{{list_item.color}};">Due date: {{ list_item.due_date }}</label>
+                            <span style="color: 
+                                {% if list_item.priority == 'High' %}red
+                                {% elif list_item.priority == 'Medium' %}orange
+                                {% else %}green
+                                {% endif %}; font-weight: bold;">
+                                Priority: {{ list_item.priority }}
+                            </span>
                             {% if list_item.is_done == 1%}
                                 <p> It took you: {{ list_item.finished_on|timeuntil:list_item.created_on }} to complete</p>
                             {% endif %}
@@ -667,6 +682,14 @@
                         <label for="{{ "InputColor_"|addstr:list.id }}">Color Tag</label>
                         <input type="color" class="form-control" id="{{ "InputColor_"|addstr:list.id }}" value="#f9f9f9">
                     </div>
+                    <div class="form-group">
+                        <label for="{{ "InputPriority_"|addstr:list.id }}">Priority</label>
+                        <select id="{{ "InputPriority_"|addstr:list.id }}" class="form-control">
+                            <option value="Low" selected>Low</option>
+                            <option value="Medium">Medium</option>
+                            <option value="High">High</option>
+                        </select>
+                    </div>
                 </form>
                 <div>
                     <span onclick="newElement({{ list.id }})" class="addBtn">Add</span>
@@ -693,6 +716,13 @@
                                 {% endif %}
                                 <label for="{{ "ListItem_"|addstr:list_item.id }}" class="text-right">Start date: {{ list_item.created_on }}</label>
                                 <label for="{{ "ListItem_"|addstr:list_item.id }}" class="due-date" style="color:{{list_item.color}};">Due date: {{list_item.due_date}}</label>
+                                <span style="color: 
+                                {% if list_item.priority == 'High' %}red
+                                {% elif list_item.priority == 'Medium' %}orange
+                                {% else %}green
+                                {% endif %}; font-weight: bold;">
+                                Priority: {{ list_item.priority }}
+                            </span>
                                 {% if list_item.is_done == 1%}
                                     <p> It took you: {{ list_item.finished_on|timeuntil:list_item.created_on }} to complete</p>
                                 {% endif %}
@@ -980,6 +1010,7 @@ function newElement(list_id, saved_to_database = true) {
     var descValue = descBox.value;
     var inputDue = document.getElementById("InputDue_" + list_id.toString()).value;
     var inputColor = document.getElementById("InputColor_" + list_id.toString()).value;
+    var inputPriority = document.getElementById("InputPriority_" + list_id.toString()).value;
     // var unorderedList = inputBox.parentElement.nextElementSibling
 
     {#var list_html_tag_id =  #}
@@ -1042,7 +1073,8 @@ function newElement(list_id, saved_to_database = true) {
             "list_item_desc": descValue,
             "create_on": create_on_timestamp,
             "due_date": inputDue,
-	        "tag_color": inputColor
+	        "tag_color": inputColor,
+            "priority": inputPriority
         }
         httpRequest.send(JSON.stringify(params))
     }
