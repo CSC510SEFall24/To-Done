@@ -387,18 +387,23 @@ def updateListItem(request, item_id):
         return redirect("/login")
     if request.method == 'POST':
         updated_text = request.POST.get('note', '').strip()
+        updated_due_date = request.POST.get('due_date', '').strip()
+
         if not updated_text:
             return JsonResponse({'error': 'Task name cannot be empty'}, status=400)
+        if not updated_due_date:
+            return JsonResponse({'error': 'Due date cannot be empty'}, status=400)
 
         try:
             with transaction.atomic():
                 todo_list_item = ListItem.objects.get(id=item_id)
                 todo_list_item.item_name = updated_text
+                todo_list_item.due_date = updated_due_date
                 todo_list_item.save()
         except IntegrityError as e:
             return JsonResponse({'error': str(e)}, status=500)
         
-        return JsonResponse({'success': True, 'updated_item_name': updated_text})
+        return JsonResponse({'success': True, 'updated_item_name': updated_text, 'updated_due_date': updated_due_date})
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
