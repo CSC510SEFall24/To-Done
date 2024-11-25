@@ -548,7 +548,7 @@
     </div>
 
     <div class="main">
-
+        <!-- Displaying common or shared list between users -->
         {% for list in shared_list %}
         <div class="header">
             <h2>
@@ -774,10 +774,11 @@ function editTask() {
     listItem.querySelector("label").replaceWith(inputBox);
     if (listItem.querySelector(".description")) {
     listItem.querySelector(".description").replaceWith(descriptionBox);
-} else {
+    } else {
     var dueDateElement = listItem.querySelector(".due-date");
     dueDateElement.parentNode.insertBefore(descriptionBox, listItem.querySelector(".text-right"));
-}
+    dueDateElement.parentNode.insertBefore(document.createElement("br"), listItem.querySelector(".text-right"));
+    }
     listItem.querySelector(".due-date").replaceWith(dueDateInput);
 
     //change the edit button to a save button
@@ -1077,7 +1078,7 @@ function newTodoList() {
         alert("Select a tag");
     }
     else {
-        // add new to-do list to the
+        //add new to-do list to the
         li_a.innerHTML = inputValue
         li.appendChild(li_a)
 
@@ -1095,7 +1096,7 @@ function newTodoList() {
             "create_on": create_on_timestamp,
             "list_tag": listTag,
             "create_new_tag": create_new_tag,
-            "shared_user": sharedUser,
+            "shared_user": sharedUser, //progress (sharing list feature)
         }
 
         // httpRequest.responseType = 'text';
