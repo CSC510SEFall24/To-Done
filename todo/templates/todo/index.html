@@ -600,7 +600,7 @@
                             <label for="{{ "ListItem_"|addstr:list_item.id }}">{{ list_item.item_name }}</label>
                             <br>
                             <label for="{{ "ListItem_"|addstr:list_item.id }}" class = "text-right">Start date: {{ list_item.created_on }}</label>
-                            <label for="{{ "ListItem_"|addstr:list_item.id }}" style="color:{{list_item.color}};">Due date: {{ list_item.due_date }}</label>
+                            <label for="{{ "ListItem_"|addstr:list_item.id }}" class="due-date" style="color:{{list_item.color}};">Due date: {{ list_item.due_date }}</label>
                             {% if list_item.is_done == 1%}
                                 <p> It took you: {{ list_item.finished_on|timeuntil:list_item.created_on }} to complete</p>
                             {% endif %}
@@ -676,7 +676,7 @@
                                 <label for="{{ "ListItem_"|addstr:list_item.id }}">{{ list_item.item_name }}</label>
                                 <br>
                                 <label for="{{ "ListItem_"|addstr:list_item.id }}" class="text-right">Start date: {{ list_item.created_on }}</label>
-                                <label for="{{ "ListItem_"|addstr:list_item.id }}" style="color:{{list_item.color}};">Due: {{list_item.due_date}}</label>
+                                <label for="{{ "ListItem_"|addstr:list_item.id }}" class="due-date" style="color:{{list_item.color}};">Due date: {{list_item.due_date}}</label>
                                 {% if list_item.is_done == 1%}
                                     <p> It took you: {{ list_item.finished_on|timeuntil:list_item.created_on }} to complete</p>
                                 {% endif %}
@@ -727,9 +727,11 @@ for (let i = 0; i < editButtons.length; i++) {
     editButtons[i].onclick = editTask;
 }
 
+
 function editTask() {
     var listItem = this.parentElement;
     var itemName = listItem.querySelector("label").innerHTML;
+    var dueDate = listItem.querySelector(".due-date").innerHTML.replace("Due date: ", "").trim();;
     var itemId = listItem.querySelector("input").id.substring(9);
 
     var inputBox = document.createElement("input");
@@ -737,8 +739,19 @@ function editTask() {
     inputBox.value = itemName;
     inputBox.id = "editInput_" + itemId;
 
-    listItem.querySelector("label").replaceWith(inputBox);
+        //replace the due date with a date input field
+    var parsedDate = new Date(dueDate);
+    parsedDate.setDate(parsedDate.getDate() + 1);
+    var formattedDate = parsedDate.toISOString().split("T")[0];
+    var dueDateInput = document.createElement("input");
+    dueDateInput.type = "date";
+    dueDateInput.value = formattedDate;
+    dueDateInput.id = "editDueDate_" + itemId;
 
+    listItem.querySelector("label").replaceWith(inputBox);
+    listItem.querySelector(".due-date").replaceWith(dueDateInput);
+
+    //change the edit button to a save button
     this.innerHTML = "Save";
     this.onclick = saveTask;
 }
@@ -747,14 +760,26 @@ function saveTask() {
     //get the updated task details
     var listItem = this.parentElement;
     var inputBox = listItem.querySelector("input[type=text]");
+    var dueDateInput = listItem.querySelector("input[type=date]");
     var updatedText = inputBox.value;
+    var updatedDueDate = dueDateInput.value;
     var itemId = inputBox.id.substring(10);
 
-    //replace the input box with the updated label
+    //replace the input boxes with updated label and due date span
     var updatedLabel = document.createElement("label");
     updatedLabel.for = "ListItem_" + itemId;
     updatedLabel.innerHTML = updatedText;
+
+    var updatedDueDateSpan = document.createElement("span");
+    updatedDueDateSpan.className = "due-date";
+    updatedDueDateSpan.innerHTML = "Due date: " + new Date(updatedDueDate).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    });
+
     inputBox.replaceWith(updatedLabel);
+    dueDateInput.replaceWith(updatedDueDateSpan);
 
     //change the save button back to an edit button
     this.innerHTML = "Edit";
@@ -764,7 +789,7 @@ function saveTask() {
     var httpRequest = new XMLHttpRequest();
     httpRequest.open("POST", "/updateListItem/" + itemId);
     httpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    httpRequest.send("note=" + encodeURIComponent(updatedText));
+    httpRequest.send("note=" + encodeURIComponent(updatedText) + "&due_date=" + encodeURIComponent(updatedDueDate));
 }
     
 // Click on a close button to hide the current list item
