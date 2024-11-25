@@ -386,7 +386,8 @@ def updateListItem(request, item_id):
     if not request.user.is_authenticated:
         return redirect("/login")
     if request.method == 'POST':
-        updated_text = request.POST.get('note', '').strip()
+        updated_text = request.POST.get('item_name', '').strip()
+        updated_description = request.POST.get('item_description', "").strip()
         updated_due_date = request.POST.get('due_date', '').strip()
 
         if not updated_text:
@@ -398,6 +399,7 @@ def updateListItem(request, item_id):
             with transaction.atomic():
                 todo_list_item = ListItem.objects.get(id=item_id)
                 todo_list_item.item_name = updated_text
+                todo_list_item.item_desc = updated_description
                 todo_list_item.due_date = updated_due_date
                 todo_list_item.save()
         except IntegrityError as e:
@@ -444,8 +446,8 @@ def addNewListItem(request):
         # create a new to-do list object and save it to the database
         try:
             with transaction.atomic():
-                todo_list_item = ListItem(item_name=item_name, item_text=item_desc,created_on=create_on_time, finished_on=finished_on_time,
-                                          due_date=due_date, tag_color=tag_color, list_id=list_id,  is_done=False)
+                todo_list_item = ListItem(item_name=item_name, item_desc=item_desc,created_on=create_on_time, finished_on=finished_on_time,
+                                          due_date=due_date, tag_color=tag_color, list_id=list_id,item_text='',  is_done=False)
                 todo_list_item.save()
                 result_item_id = todo_list_item.id
         except IntegrityError:
