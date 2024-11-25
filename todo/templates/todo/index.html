@@ -307,12 +307,29 @@
           text-decoration: line-through;
         }
 
+        /* Style the edit button */
+        .main .edit{
+        position: absolute;
+          right: 45px;
+          top: 0;
+          padding: 15px 16px;
+          margin-top: 5px;
+          border: none;
+          border-radius: 10px;
+        }
+
+        .main .edit:hover{
+            background-color: #0fa662;
+            color: white;
+        }
+
         /* Style the close button */
         .main .close {
           position: absolute;
           right: 0;
           top: 0;
           padding: 12px 16px 12px 16px;
+          margin-top: 5px;
           border-radius: 10px;
         }
 
@@ -587,6 +604,7 @@
                             {% if list_item.is_done == 1%}
                                 <p> It took you: {{ list_item.finished_on|timeuntil:list_item.created_on }} to complete</p>
                             {% endif %}
+                            <button class="edit">Edit</button>
                             <span class="close">x</span>
                         </li>
                 {% endif %}
@@ -662,6 +680,7 @@
                                 {% if list_item.is_done == 1%}
                                     <p> It took you: {{ list_item.finished_on|timeuntil:list_item.created_on }} to complete</p>
                                 {% endif %}
+                                <button class="edit">Edit</button>
                                 <span class="close">x</span>
                             </li>
                     {% endif %}
@@ -702,6 +721,52 @@
     {% endif %}
 </body>
 <script>
+    //Click on a close button to edit the current list item
+    var editButtons = document.getElementsByClassName("edit");
+for (let i = 0; i < editButtons.length; i++) {
+    editButtons[i].onclick = editTask;
+}
+
+function editTask() {
+    var listItem = this.parentElement;
+    var itemName = listItem.querySelector("label").innerHTML;
+    var itemId = listItem.querySelector("input").id.substring(9);
+
+    var inputBox = document.createElement("input");
+    inputBox.type = "text";
+    inputBox.value = itemName;
+    inputBox.id = "editInput_" + itemId;
+
+    listItem.querySelector("label").replaceWith(inputBox);
+
+    this.innerHTML = "Save";
+    this.onclick = saveTask;
+}
+
+function saveTask() {
+    //get the updated task details
+    var listItem = this.parentElement;
+    var inputBox = listItem.querySelector("input[type=text]");
+    var updatedText = inputBox.value;
+    var itemId = inputBox.id.substring(10);
+
+    //replace the input box with the updated label
+    var updatedLabel = document.createElement("label");
+    updatedLabel.for = "ListItem_" + itemId;
+    updatedLabel.innerHTML = updatedText;
+    inputBox.replaceWith(updatedLabel);
+
+    //change the save button back to an edit button
+    this.innerHTML = "Edit";
+    this.onclick = editTask;
+
+    //send the updated task to the server
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.open("POST", "/updateListItem/" + itemId);
+    httpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+    httpRequest.send("note=" + encodeURIComponent(updatedText));
+}
+    
 // Click on a close button to hide the current list item
 var close = document.getElementsByClassName("close");
 var i;
