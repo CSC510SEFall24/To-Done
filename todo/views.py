@@ -689,7 +689,7 @@ def createNewTodoList(request):
                 todo_list.save()
                 print(todo_list.id)
 
-                # Progress
+                # implemented 'sharing list between users' feature
                 if body['shared_user']:
                     user_list = shared_user.split(' ')
 
