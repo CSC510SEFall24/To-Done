@@ -137,6 +137,17 @@
                                    style="background-color: #f9f9f9;">
                         </div>
                     </div>
+                    <div>
+                        <label for="{{ "InputPriority_"|addstr:list.id }}">Priority</label>
+                        <select id="{{ "InputPriority_"|addstr:list.id }}" 
+                                onchange="updatePriorityColor(this)"
+                                class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                            <option value="" disabled selected>Priority (Medium default)</option>
+                            <option value="HIGH" data-color="#fecaca">High Priority</option>
+                            <option value="MEDIUM" data-color="#fde68a">Medium Priority</option>
+                            <option value="LOW" data-color="#bbf7d0">Low Priority</option>
+                        </select>
+                    </div>
                 </form>
                 <div>
                     <button onclick="newElement({{ list.id }})">Add</button>
@@ -146,15 +157,23 @@
                         {% if list_item.list_id == list.id %}
                             <li class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                                 <div class="flex-grow">
-                                    <div class="flex items-center">
+                                    <div class="flex items-center space-x-3">
                                         <input type="checkbox" 
                                                id="ListItem_{{ list_item.id }}" 
                                                name="ListItem_{{ list_item.id }}" 
                                                value="ListItem_{{ list_item.id }}"
                                                {% if list_item.is_done %}checked{% endif %}
                                                onchange="markItemDone(this, {{ list_item.id }})"
-                                               class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
-                                        <label for="ListItem_{{ list_item.id }}" class="ml-2 {% if list_item.is_done %}line-through text-gray-500{% endif %}">{{ list_item.item_name }}</label>
+                                               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                        <label for="ListItem_{{ list_item.id }}" 
+                                               class="{% if list_item.is_done %}line-through text-gray-500{% endif %} flex items-center space-x-2">
+                                            <span class="text-lg">{{ list_item.item_name }}</span>
+                                            <div class="w-3 h-3 rounded-full ml-2
+                                                {% if list_item.priority == 'HIGH' %}bg-red-400
+                                                {% elif list_item.priority == 'MEDIUM' %}bg-yellow-400
+                                                {% else %}bg-green-400{% endif %}">
+                                            </div>
+                                        </label>
                                     </div>
                                     <div class="mt-1 text-xs text-gray-500 space-y-1 ml-6">
                                         {% if list_item.item_text %}
@@ -234,6 +253,17 @@
                                    onchange="this.style.backgroundColor = this.value;"
                                    onclick="this.style.backgroundColor = this.value;">
                         </div>
+                        <div class="flex flex-col">
+                            <label for="{{ "InputPriority_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Priority</label>
+                            <select id="{{ "InputPriority_"|addstr:list.id }}" 
+                                    onchange="updatePriorityColor(this)"
+                                    class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                                <option value="" disabled selected>Priority (Medium default)</option>
+                                <option value="HIGH" data-color="#fecaca">High Priority</option>
+                                <option value="MEDIUM" data-color="#fde68a">Medium Priority</option>
+                                <option value="LOW" data-color="#bbf7d0">Low Priority</option>
+                            </select>
+                        </div>
                     </form>
                     <div class="mb-4">
                         <button onclick="newElement({{ list.id }})" 
@@ -246,15 +276,23 @@
                             {% if list_item.list_id == list.id %}
                                 <li class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                                     <div class="flex-grow">
-                                        <div class="flex items-center">
+                                        <div class="flex items-center space-x-3">
                                             <input type="checkbox" 
                                                    id="ListItem_{{ list_item.id }}" 
                                                    name="ListItem_{{ list_item.id }}" 
                                                    value="ListItem_{{ list_item.id }}"
                                                    {% if list_item.is_done %}checked{% endif %}
                                                    onchange="markItemDone(this, {{ list_item.id }})"
-                                                   class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                            <label for="ListItem_{{ list_item.id }}" class="ml-2 {% if list_item.is_done %}line-through text-gray-500{% endif %}">{{ list_item.item_name }}</label>
+                                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <label for="ListItem_{{ list_item.id }}" 
+                                                   class="{% if list_item.is_done %}line-through text-gray-500{% endif %} flex items-center space-x-2">
+                                                <span class="text-lg">{{ list_item.item_name }}</span>
+                                                <div class="w-3 h-3 rounded-full ml-2
+                                                    {% if list_item.priority == 'HIGH' %}bg-red-400
+                                                    {% elif list_item.priority == 'MEDIUM' %}bg-yellow-400
+                                                    {% else %}bg-green-400{% endif %}">
+                                                </div>
+                                            </label>
                                         </div>
                                         <div class="mt-1 text-xs text-gray-500 space-y-1 ml-6">
                                             {% if list_item.item_text %}
@@ -343,6 +381,18 @@
                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
                         </div>
 
+                        <div>
+                            <label for="edit-priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
+                            <select id="edit-priority" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                                    style="background-color: #fde68a;">
+                                <option value="" disabled selected>Priority (Medium default)</option>
+                                <option value="HIGH" style="background-color: #fecaca">High Priority</option>
+                                <option value="MEDIUM" style="background-color: #fde68a">Medium Priority</option>
+                                <option value="LOW" style="background-color: #bbf7d0">Low Priority</option>
+                            </select>
+                        </div>
+
                         <div class="flex items-center">
                             <input type="checkbox" id="edit-is-done" 
                                    class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
@@ -375,6 +425,7 @@
                     document.getElementById('edit-title').value = response.item_name || '';
                     document.getElementById('edit-note').value = response.item_text || '';
                     document.getElementById('edit-due-date').value = response.due_date ? response.due_date.split('T')[0] : '';
+                    document.getElementById('edit-priority').value = response.priority || '';
                     document.getElementById('edit-is-done').checked = response.is_done || false;
                 } else {
                     console.error('Failed to fetch item details');
@@ -571,6 +622,7 @@
         const title = document.getElementById('edit-title').value;
         const note = document.getElementById('edit-note').value;
         const dueDate = document.getElementById('edit-due-date').value;
+        const priority = document.getElementById('edit-priority').value;
         const isDone = document.getElementById('edit-is-done').checked;
         
         const httpRequest = new XMLHttpRequest();
@@ -635,6 +687,7 @@
             title: title,
             note: note,
             due_date: dueDate,
+            priority: priority,
             is_done: isDone
         }));
     })
@@ -655,6 +708,7 @@
         var inputValue = inputBox.value;
         var inputDue = document.getElementById("InputDue_" + list_id.toString()).value;
         var inputColor = document.getElementById("InputColor_" + list_id.toString()).value;
+        var inputPriority = document.getElementById("InputPriority_" + list_id.toString()).value;
         // var unorderedList = inputBox.parentElement.nextElementSibling
 
         {#var list_html_tag_id =  #}
@@ -711,7 +765,8 @@
                 "list_item_name": inputValue,
                 "create_on": create_on_timestamp,
                 "due_date": inputDue,
-                "tag_color": inputColor
+                "tag_color": inputColor,
+                "priority": inputPriority
             }
             httpRequest.send(JSON.stringify(params))
         }
@@ -794,6 +849,19 @@
     function importFromCSV(){
         httpRequest.open('POST', '/import_todo_csv');
     }
+
+    function updatePriorityColor(selectElement) {
+        const selectedOption = selectElement.options[selectElement.selectedIndex];
+        const color = selectedOption.getAttribute('data-color');
+        selectElement.style.backgroundColor = color || '#fde68a'; // Default to medium priority color
+    }
+
+    // Initialize priority dropdowns with correct colors
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('select[id^="InputPriority_"]').forEach(select => {
+            updatePriorityColor(select);
+        });
+    });
     </script>
     <style>
     #edit-sidebar {

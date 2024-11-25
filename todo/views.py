@@ -402,6 +402,11 @@ def updateListItem(request, item_id):
                 else:
                     # If task is not done, set finished_on to a far future date
                     list_item.finished_on = datetime.datetime(2099, 12, 31)  # Use naive datetime
+            if 'priority' in body:
+                if body['priority'] in ['HIGH', 'MEDIUM', 'LOW']:
+                    list_item.priority = body['priority']
+                else:
+                    return JsonResponse({'error': 'Invalid priority level'}, status=400)
             
             # Ensure tag_color has a value
             if not list_item.tag_color:
@@ -416,7 +421,8 @@ def updateListItem(request, item_id):
                 'due_date': list_item.due_date.isoformat() if list_item.due_date else None,
                 'is_done': list_item.is_done,
                 'finished_on': list_item.finished_on.isoformat() if list_item.finished_on else None,
-                'created_on': list_item.created_on.isoformat()
+                'created_on': list_item.created_on.isoformat(),
+                'priority': list_item.priority
             })
             
         except json.JSONDecodeError:
@@ -458,14 +464,29 @@ def addNewListItem(request):
         finished_on_time = datetime.datetime.fromtimestamp(create_on)
         due_date = body['due_date']
         tag_color = body['tag_color']
+        priority = body.get('priority', 'MEDIUM')  # Default to MEDIUM if not provided
+
+        # Validate priority
+        if priority not in ['HIGH', 'MEDIUM', 'LOW']:
+            return JsonResponse({'error': 'Invalid priority level', 'item_id': -1})
+
         print(item_name)
         print(create_on)
         result_item_id = -1
         # create a new to-do list object and save it to the database
         try:
             with transaction.atomic():
-                todo_list_item = ListItem(item_name=item_name, created_on=create_on_time, finished_on=finished_on_time,
-                                          due_date=due_date, tag_color=tag_color, list_id=list_id, item_text="", is_done=False)
+                todo_list_item = ListItem(
+                    item_name=item_name, 
+                    created_on=create_on_time, 
+                    finished_on=finished_on_time,
+                    due_date=due_date, 
+                    tag_color=tag_color, 
+                    list_id=list_id, 
+                    item_text="", 
+                    is_done=False,
+                    priority=priority
+                )
                 todo_list_item.save()
                 result_item_id = todo_list_item.id
         except IntegrityError:

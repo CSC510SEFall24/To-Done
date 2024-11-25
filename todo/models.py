@@ -1,6 +1,6 @@
 # MIT License
 
-# Copyright © 2024 Akarsh Reddy Eathamukkala
+# Copyright 2024 Akarsh Reddy Eathamukkala
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
 # this software and associated documentation files (the “Software”), to deal in
@@ -52,6 +52,12 @@ class ListTags(models.Model):
 
 
 class ListItem(models.Model):
+    PRIORITY_CHOICES = [
+        ('HIGH', 'High'),
+        ('MEDIUM', 'Medium'),
+        ('LOW', 'Low'),
+    ]
+    
     # the name of a list item
     item_name = models.CharField(max_length=50, null=True, blank=True)
     # the text note of a list item
@@ -62,6 +68,11 @@ class ListItem(models.Model):
     finished_on = models.DateTimeField()
     due_date = models.DateField()
     tag_color = models.CharField(max_length=10)
+    priority = models.CharField(
+        max_length=6,
+        choices=PRIORITY_CHOICES,
+        default='MEDIUM'
+    )
 
     objects = models.Manager()
 
