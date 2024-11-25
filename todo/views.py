@@ -386,23 +386,21 @@ def updateListItem(request, item_id):
     if not request.user.is_authenticated:
         return redirect("/login")
     if request.method == 'POST':
-        updated_text = request.POST['note']
-        # print(request.POST)
-        print(updated_text)
-        print(item_id)
-        if item_id <= 0:
-            return redirect("index")
+        updated_text = request.POST.get('note', '').strip()
+        if not updated_text:
+            return JsonResponse({'error': 'Task name cannot be empty'}, status=400)
+
         try:
             with transaction.atomic():
                 todo_list_item = ListItem.objects.get(id=item_id)
-                todo_list_item.item_text = updated_text
-                todo_list_item.save(force_update=True)
+                todo_list_item.item_name = updated_text
+                todo_list_item.save()
         except IntegrityError as e:
-            print(str(e))
-            print("unknown error occurs when trying to update todo list item text")
-        return redirect("/")
+            return JsonResponse({'error': str(e)}, status=500)
+        
+        return JsonResponse({'success': True, 'updated_item_name': updated_text})
     else:
-        return redirect("index")
+        return JsonResponse({'error': 'Invalid request method'}, status=405)
 
 
 # Add a new to-do list item, called by javascript function
