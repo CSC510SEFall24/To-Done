@@ -432,19 +432,20 @@ def addNewListItem(request):
         body = json.loads(body_unicode)
         list_id = body['list_id']
         item_name = body['list_item_name']
+        item_desc = body.get('list_item_desc', "")
         create_on = body['create_on']
         create_on_time = datetime.datetime.fromtimestamp(create_on)
         finished_on_time = datetime.datetime.fromtimestamp(create_on)
         due_date = body['due_date']
         tag_color = body['tag_color']
-        print(item_name)
+        print(item_name,item_desc)
         print(create_on)
         result_item_id = -1
         # create a new to-do list object and save it to the database
         try:
             with transaction.atomic():
-                todo_list_item = ListItem(item_name=item_name, created_on=create_on_time, finished_on=finished_on_time,
-                                          due_date=due_date, tag_color=tag_color, list_id=list_id, item_text="", is_done=False)
+                todo_list_item = ListItem(item_name=item_name, item_text=item_desc,created_on=create_on_time, finished_on=finished_on_time,
+                                          due_date=due_date, tag_color=tag_color, list_id=list_id,  is_done=False)
                 todo_list_item.save()
                 result_item_id = todo_list_item.id
         except IntegrityError:
