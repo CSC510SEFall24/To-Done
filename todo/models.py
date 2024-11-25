@@ -55,6 +55,7 @@ class ListItem(models.Model):
     # the name of a list item
     item_name = models.CharField(max_length=50, null=True, blank=True)
     # the text note of a list item
+    item_desc = models.CharField(max_length=250,null=True, blank=True)
     item_text = models.CharField(max_length=100)
     is_done = models.BooleanField(default=False)
     created_on = models.DateTimeField()
