@@ -412,7 +412,7 @@ def updateListItem(request, item_id):
         except IntegrityError as e:
             return JsonResponse({'error': str(e)}, status=500)
         
-        return JsonResponse({'success': True, 'updated_item_name': updated_text, 'updated_due_date': updated_due_date, 'updated_priority': updated_priority})
+        return JsonResponse({'success': True, 'updated_item_name': updated_text, 'updated_due_date': updated_due_date})
     else:
         return JsonResponse({'error': 'Invalid request method'}, status=405)
 
@@ -639,7 +639,7 @@ def getListItemById(request):
                 query_item = ListItem.objects.get(id=list_item_id)
                 print("item_text", query_item.item_text)
                 # Sending an success response
-                return JsonResponse({'item_id': query_item.id, 'item_name': query_item.item_name, 'list_name': query_list.title_text, 'item_text': query_item.item_text, 'priority': query_item.priority,})
+                return JsonResponse({'item_id': query_item.id, 'item_name': query_item.item_name, 'list_name': query_list.title_text, 'item_text': query_item.item_text})
         except IntegrityError:
             print("query list item" + str(list_item_name) + " failed!")
             JsonResponse({})

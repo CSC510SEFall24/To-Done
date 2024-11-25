@@ -779,7 +779,6 @@ function editTask() {
     var itemName = listItem.querySelector("label").innerHTML;
     var descriptionText = listItem.querySelector(".description")?.innerHTML || "";
     var dueDate = listItem.querySelector(".due-date").innerHTML.replace("Due date: ", "").trim();;
-    var priorityText = listItem.querySelector(".priority").innerHTML.replace("Priority: ", "").trim();
     var itemId = listItem.querySelector("input").id.substring(9);
 
     var inputBox = document.createElement("input");
@@ -802,14 +801,6 @@ function editTask() {
     dueDateInput.value = formattedDate;
     dueDateInput.id = "editDueDate_" + itemId;
 
-    var priorityDropdown = document.createElement("select");
-    priorityDropdown.id = "editPriority_" + itemId;
-    priorityDropdown.innerHTML = `
-        <option value="Low" ${priorityText === "Low" ? "selected" : ""}>Low</option>
-        <option value="Medium" ${priorityText === "Medium" ? "selected" : ""}>Medium</option>
-        <option value="High" ${priorityText === "High" ? "selected" : ""}>High</option>
-    `;
-
     listItem.querySelector("label").replaceWith(inputBox);
     if (listItem.querySelector(".description")) {
     listItem.querySelector(".description").replaceWith(descriptionBox);
@@ -819,7 +810,6 @@ function editTask() {
     dueDateElement.parentNode.insertBefore(document.createElement("br"), listItem.querySelector(".text-right"));
     }
     listItem.querySelector(".due-date").replaceWith(dueDateInput);
-    listItem.querySelector(".priority").replaceWith(priorityDropdown);
 
     //change the edit button to a save button
     this.innerHTML = "Save";
@@ -832,7 +822,6 @@ function saveTask() {
     var inputBox = listItem.querySelector("input[type=text]");
     var descriptionBox = listItem.querySelector(".inp-desc");
     var dueDateInput = listItem.querySelector("input[type=date]");
-    var priorityDropdown = listItem.querySelector("select");
     var updatedText = inputBox.value;
     var updatedDescription = descriptionBox.value.trim();
     var updatedDueDate = dueDateInput.value;
@@ -855,16 +844,9 @@ function saveTask() {
         year: 'numeric'
     });
 
-    var updatedPrioritySpan = document.createElement("span");
-    updatedPrioritySpan.className = "priority";
-    updatedPrioritySpan.style.color = updatedPriority === "High" ? "red" : updatedPriority === "Medium" ? "orange" : "green";
-    updatedPrioritySpan.style.fontWeight = "bold";
-    updatedPrioritySpan.innerHTML = "Priority: " + updatedPriority;
-
     inputBox.replaceWith(updatedLabel);
     descriptionBox.replaceWith(itemDescription);
     dueDateInput.replaceWith(updatedDueDateSpan);
-    priorityDropdown.replaceWith(updatedPrioritySpan);
 
     //change the save button back to an edit button
     this.innerHTML = "Edit";
@@ -877,8 +859,7 @@ function saveTask() {
     var params = {
         item_name: updatedName,
         item_description: updatedDescription,
-        due_date: updatedDueDate,
-        priority: updatedPriority
+        due_date: updatedDueDate
     };
     
     httpRequest.send(JSON.stringify(params));
