@@ -347,6 +347,12 @@
                 <form action="/todo/new-from-template" method="post">
                     {% csrf_token %}
                     <input type="hidden" name="template" id="template-{{ template.id }}" value="{{ template.id }}">
+                    <label for="priority-{{ template.id }}">Priority:</label>
+                    <select name="priority" id="priority-{{ template.id }}" class="form-control">
+                      <option value="Low" selected>Low</option>
+                      <option value="Medium">Medium</option>
+                      <option value="High">High</option>
+                    </select>
                     <button class="add-template-button" onclick="">Create Todo Using This Template</button>
                 </form>
                 <form action="/templates/delete/{{ template.id }}" method="post" style="display:inline;">
