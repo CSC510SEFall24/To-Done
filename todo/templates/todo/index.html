@@ -1,989 +1,821 @@
-<!--
-  MIT License
-  
-  Copyright © 2024 Akarsh Reddy Eathamukkala
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy of 
-  this software and associated documentation files (the “Software”), to deal in 
-  the Software without restriction, including without limitation the rights to 
-  use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-  of the Software, and to permit persons to whom the Software is furnished to 
-  do so, subject to the following conditions:
-  
-  The above copyright notice and this permission notice shall be included in 
-  all copies or substantial portions of the Software.
-  
-  THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS 
-  OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE 
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER 
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING 
-  FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS 
-  IN THE SOFTWARE. 
--->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <style>
-        body {
-            font-family: Calibri, Helvetica, sans-serif;
-            margin: 0;
-            background-color: {{ config.background_color }};
-            color: {{ config.text_color }};
-        }
-
-        ul {
-            list-style: none;
-            padding-left: 0;
-        }
-
-        .topbar {
-            overflow: hidden;
-            background-color: {{ config.primary_color }};
-            position: fixed;
-            width: 100%;
-            top: 0;
-            z-index: 1;
-        }
-
-        .topbar a {
-            float: left;
-            color: white;
-            text-align: center;
-            padding-left: 15px;
-            text-decoration: none;
-            font-size: 25px;
-            padding: 10px;
-        }
-
-        /* Change the color of links on hover */
-        .topbar li a.tabs:hover {
-          color: #ccc;
-        }
-
-        .topbar ul {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            display: inline-block;
-        }
-
-        .topbar ul li {
-            display: inline-block;
-            color: #f2f2f2;
-            text-align: center;
-        }
-
-        .listItem > * {
-          color: #000000
-        }
-        
-        .sidenav {
-            height: 100%;
-            width: 250px;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: {{ config.side_nav }};
-            overflow-x: hidden;
-            padding-top: 15px;
-            margin: 0;
-            margin-top: 49px;
-        }
-
-        .sidenav li:hover {
-          background: #ddd;
-        }
-
-        .sidenav a {
-            padding: 6px 8px 6px 16px;
-            text-decoration: none;
-            font-size: 20px;
-            color: {{config.text_color}};
-            display: block;
-        }
-
-        .sidenav a:hover {
-            color: {{ config.primary_color }};
-        }
-
-        .sidenav input[type=text] {
-          border:none;
-          border-radius: 10px;
-          width: 200px;
-          margin-left: 10px;
-          margin-top: 5px;
-          padding: 10px;
-          float: left;
-          font-size: 16px;
-          box-shadow: 1px 1px 5px #555 inset;
-          white-space: nowrap;
-          display: block;
-        }
-
-        .sidenav div {
-          width: 220px;
-          margin-left: 10px;
-          padding: 10px;
-          float: left;
-          font-size: 16px;
-        }
-
-        #listTags {
-          border:none;
-          border-radius: 10px;
-          /* width: 175px; */
-          margin-left: 10px;
-          padding: 10px;
-          float: left;
-          font-size: 16px;
-          box-shadow: 1px 1px 5px #555 inset;
-          white-space: nowrap;
-          display: block;
-        }
-
-        #newListTag{
-            border:none;
-            border-radius: 10px;
-            width: 60%;
-            margin-left: 10px;
-            padding: 10px;
-            float: left;
-            font-size: 16px;
-            box-shadow: 1px 1px 5px #555 inset;
-            white-space: nowrap;
-            display: block;
-        }
-
-        .sidenav .addTodoList {
-          padding: 9px;
-          width: 17%;
-          background: #d9d9d9;
-          color: #555;
-          float: right;
-          margin-top: 5px;
-          text-align: center;
-          font-size: 16px;
-          cursor: pointer;
-          transition: 0.3s;
-          border-radius: 10px;
-          display: block;
-        }
-
-        .sidenav .addTodoList:hover {
-          background-color: #bbb;
-        }
-
-        .sidenav hr {
-            margin-top: 50px;
-            height: 2px;
-            background-color: {{ config.primary_color }};
-            border: none;
-            width: 87%;
-            display: block;
-        }
-
-        .rightsidebar hr {
-            height: 2px;
-            background-color: {{ config.primary_color }};
-            border: none;
-            width: 87%;
-        }
-
-        .rightsidebar {
-            height: 100%;
-            width: 350px;
-            margin-top: 49px;
-            position: fixed;
-            top: 0;
-            right: 0;
-            background-color: {{ config.side_nav }};
-            overflow-x: hidden;
-            padding-top: 10px;
-            padding-right: 10px;
-            {#margin: 0;#}
-        }
-
-        .rightsidebar a {
-            padding: 6px 8px 6px 16px;
-            text-decoration: none;
-            font-size: 20px;
-            color: {{ config.text_color }};
-            display: block;
-        }
-
-        .rightsidebar form {
-            padding: 6px 8px 6px 16px;
-            text-decoration: none;
-            font-size: 20px;
-            color: {{ config.text_color }};
-            display: block;
-        }
-
-        .rightsidebar textarea {
-            width: 325px;
-        }
-
-        .rightsidebar .save-button {
-            padding: 9px;
-            background: #d9d9d9;
-            color: #555;
-            float: left;
-            text-align: center;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-            border-radius: 10px;
-            display: inline-block;
-            border: 0;
-            margin-top: 10px;
-        }
-
-        .rightsidebar .save-button:hover {
-          background-color: #bbb;
-        }
-
-        .main {
-            margin-left: 250px; /* Same as the width of the sidenav */
-            margin-right: 350px; /* Same as the width of the sidenav */
-            font-size: 20px;
-            padding: 0px 20px;
-            margin-top: 70px;
-        }
-
-        .main h2 a {
-            text-decoration: none;
-            color: {{ config.text_color }};
-            display: block;
-            padding-left: 5px;
-        }
-
-        #noListYet {
-            text-decoration: none;
-            color: {{ config.text_color }};
-            display: block;
-            align-items: center;
-        }
-
-
-        /* Include the padding and border in an element's total width and height */
-        .main * {
-          box-sizing: border-box;
-        }
-
-        /* Remove margins and padding from the list */
-        .main ul {
-          margin: 0;
-          padding: 0;
-        }
-
-        /* Style the list items */
-        .main ul li {
-          cursor: pointer;
-          position: relative;
-          padding: 12px 8px 12px 40px;
-          list-style-type: none;
-          background: #f9f9f9;
-          font-size: 18px;
-          transition: 0.2s;
-          border-radius: 10px; /* does rounded edges on list items */
-
-          /* make the list items unselectable */
-          -webkit-user-select: none;
-          -moz-user-select: none;
-          -ms-user-select: none;
-          user-select: none;
-        }
-
-        /* Darker background-color on hover */
-        .main ul li:hover {
-          background: #ddd;
-        }
-
-        .main ul li.done {
-          background: #3d3939;
-          color: {{ config.text_color }};
-          text-decoration: line-through;
-        }
-
-        /* Style the close button */
-        .main .close {
-          position: absolute;
-          right: 0;
-          top: 0;
-          padding: 12px 16px 12px 16px;
-          border-radius: 10px;
-        }
-
-        .main .close:hover {
-          background-color: #f44336;
-          color: white;
-        }
-
-        /* Style the header */
-        .main .header {
-          /* color: white; */
-          color: {{ config.text_color }};
-          display: block;
-        }
-
-        /* Clear floats after the header */
-        .main .header:after {
-          content: "";
-          display: table;
-          clear: both;
-        }
-
-        /* Style the input text*/
-        .main input[type=text] {
-          border: none;
-          border-radius: 10px;
-          width: 75%;
-          padding: 10px;
-          /* float: left; */
-          font-size: 16px;
-          box-shadow: 1px 1px 5px #555 inset;
-          white-space: nowrap;
-          display: block;
-        }
-
-        /* Style the input date*/
-        .main input[type=date] {
-          border: none;
-          border-radius: 10px;
-          width: 75%;
-          padding: 10px;
-          /* float: left; */
-          font-size: 16px;
-          box-shadow: 1px 1px 5px #555 inset;
-          white-space: nowrap;
-          display: block;
-        }
-	
-	    /* Style the input color*/
-        .main input[type=color] {
-          display: block;
-          margin-bottom: 5px;
-        }
-
-        /* Style the input checkbox within unordered list item */
-        .main ul li input[type=checkbox] {
-          position: absolute;
-          left: 2px;
-          top: 12px;
-          width: 20px;
-          height: 20px;
-          padding: 12px 16px 12px 16px;
-          border-radius: 10px;
-        }
-
-        /* Style the "Add" button */
-        .main .addBtn {
-          padding: 9px;
-          width: 100%;
-          background: #d9d9d9;
-          color: #555;
-          float:left;
-          text-align: center;
-          font-size: 16px;
-          cursor: pointer;
-          transition: 0.3s;
-          border-radius: 10px;
-          display: block;
-        }
-
-        .main .addBtn:hover {
-          background-color: #bbb;
-        }
-
-        .main .add-template-button {
-            display: inline-block;
-            cursor: pointer;
-            border-radius: 10px;
-            background: {{ config.primary_color }};
-            border: 0;
-            font-size: 16px;
-            height: 37px;
-            padding: 0 11px;
-            margin-top: 5px;
-            text-align: center;
-            width: 100%;
-            min-width: 200px;
-            font-weight: 500;
-            color: #f9f9f9;
-        }
-	
-	     /* Style the "customize" button */
-        .main .add-cust-color-button{
-            position: absolute;
-            right: 50px;
-            top: 0;
-            display: inline-block;
-            cursor: pointer;
-            border-radius: 10px;
-            background: {{ config.primary_color }};
-            color: #f9f9f9;
-            border: 0;
-            font-size: 16px;
-            height: 37px;
-            padding: 0 11px;
-            margin-top: 5px;
-            width: 10%;
-            text-align: center;
-            min-width: 100px;
-            font-weight: 300;
-        }
-
-        .main .add-cust-color-button:hover{
-            background: {{ config.hover_color }}
-        }
-
-        .tag-template {
-            display: inline-block;
-            cursor: pointer;
-            border-radius: 10px;
-            border-color: {{ config.primary_color }};
-            border: 1;
-            font-size: 16px;
-            height: 40px;
-            text-align: center;
-            width: fit-content;
-            font-weight: 500;
-            color: {{ config.primary_color }};
-        }
-
-        .main .add-template-button:hover{
-            background: {{ config.hover_color }}
-        }
-
-        .add-template-button.delete:hover{
-            background: #a81a0f;
-        }
-
-        .shared-list {
-            color: black;
-            font-size: 12px;
-            margin-top: 5px;
-            padding-left: 5px;
-        }
-
-    </style>
     <meta charset="UTF-8">
     <title>To-Done</title>
     <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link href="https://unpkg.com/tailwindcss@^2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
     {% load todo_extras %}
-    <div class="topbar">
-        <ul>
-            <li><a href="/">To-Done</a></li>
-            <li><a class="tabs" href="/todo">Lists</a></li>
-            <li><a class="tabs" href="/templates">Templates</a></li>
-        </ul>
-		<ul style="float: right;">
-		{% if user.is_authenticated %}
-            <li><a href="#">Welcome, {{user.username}}</a></li>
-            <li><a href="{% url 'todo:config_hook' 'index' %}">Theme: 
-                {% if config.darkMode %} Dark 
-                {% else %} Light {% endif %}</a></li>
-		  <li><a class="tabs" href="/logout">Logout</a></li>
-		{% else %}
-		  <li><a class="tabs" href="/login">Login</a></li>
-		{% endif %}
-		</ul>
-    </div>
-    <div class="sidenav">
-        <input type="text" id="todoListInput" placeholder="New Todo List">
-        <div>Select a tag for your todo list</div>
-        <select id="listTags" onchange="toggleNewTagInput()">
-            {% for tag in list_tags %}
-            <option>{{ tag.tag_name }}</option>
-            {% endfor %}
-            <option selected>none</option>
-            <option value="new">--create new tag--</option>
-        </select>
-        <input type="hidden" id="newListTag" placeholder="New List tag">
-        <input type="text" id="sharedUser" placeholder="Share this list with...">
-        <span onclick="newTodoList()" class="addTodoList">Add</span>
-        <!-- <span onclick="newTodoList()" class="addTodoList">Add</span> -->
-
-        <!-- <button type="button" style="margin-top: 20px;"><a href="{% url 'todo:config_hook' 'export_todo_csv' %}"></a> Export ToDo as CSV</button> -->
-        <span><h3><br/></h3></span>
-
-        <div style="display: inline-block">
-        <a href="{% url 'todo:export_todo_csv' %}" style="font-size: 1.2rem; border: solid 2px #0fa662;border-radius: 5px; margin-bottom: 10px;">Export</a>
-        <form method="POST" enctype="multipart/form-data" action="{% url 'todo:import_todo_csv' %}">
-            {% csrf_token %}
-            <label for="csv_file">Import from CSV File:</label>
-            <input type="file" name="csv_file" id="csv_file" required>
-            <button type="submit">Import</button>
-        </form>
-
-        <!-- <form method="post" enctype="multipart/form-data">
-            {% csrf_token %}
-            <label>Select CSV File to Import:</label>
-            <input type="file" name="csv_file" required>
-        <!-- <a href="{% url 'todo:config_hook' 'import_todo_csv' %}" class="btn btn-primary" style="margin-bottom: 10px;">Export ToDo as CSV</a>
-        <span onclick="newTodoList()" class="addTodoList">Add</span> -->
-         
-        </div>
-    </div>
-
-    <div class="main">
-
-        {% for list in shared_list %}
-        <div class="header">
-            <h2>
-                <a href="/todo/{{ list.id }}">{{ list.title_text }} {% if list.list_tag != "none" %}
-                    <button type="button" class="tag-template">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tag-fill" viewBox="0 0 16 16">
-                            <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1H2zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-                          </svg>
-                        {{ list.list_tag }}
+    <div class="flex min-h-screen bg-gray-100">
+        <!-- Sidebar -->
+        <div class="w-64 bg-white shadow-lg">
+            <div class="p-6 space-y-6">
+                <!-- New Todo List Section -->
+                <div class="space-y-4">
+                    <input type="text" 
+                           id="todoListInput" 
+                           placeholder="New Todo List" 
+                           class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    
+                    <div class="text-sm font-medium text-gray-700">Select a tag for your todo list</div>
+                    <select id="listTags" 
+                            onchange="toggleNewTagInput()" 
+                            class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        {% for tag in list_tags %}
+                        <option>{{ tag.tag_name }}</option>
+                        {% endfor %}
+                        <option selected>none</option>
+                        <option value="new">--create new tag--</option>
+                    </select>
+                    
+                    <input type="hidden" 
+                           id="newListTag" 
+                           placeholder="New List tag" 
+                           class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    
+                    <input type="text" 
+                           id="sharedUser" 
+                           placeholder="Share this list with..." 
+                           class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                    
+                    <button onclick="newTodoList()" 
+                            class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Add List
                     </button>
-                    {% endif %}
-                    <img src="https://cdn0.iconfinder.com/data/icons/multimedia-261/32/Send-512.png" title="This To-Do list is shared by {{ list.user_id }}" height="16px" width="16px">
-                </a>
+                </div>
 
-            </h2>
-            <!-- <input type="text" id="{{ "InputText_"|addstr:list.id }}" placeholder="New Task">
-            <span onclick="newElement({{ list.id }})" class="addBtn">Add</span> -->
-            <form>
-                <div class="form-group">
-                  <label for="{{ "InputText_"|addstr:list.id }}">New Task</label>
-                  <input type="text" class="form-control" id="{{ "InputText_"|addstr:list.id }}">
+                <!-- Import/Export Section -->
+                <div class="space-y-4 pt-6 border-t border-gray-200">
+                    <a href="{% url 'todo:export_todo_csv' %}" 
+                       class="block w-full text-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                        Export Lists
+                    </a>
+                    
+                    <form method="POST" 
+                          enctype="multipart/form-data" 
+                          action="{% url 'todo:import_todo_csv' %}" 
+                          class="space-y-3">
+                        {% csrf_token %}
+                        <label for="csvFile" 
+                               class="block text-sm font-medium text-gray-700">
+                            Import from CSV File:
+                        </label>
+                        <input type="file" 
+                               id="csvFile" 
+                               accept=".csv"
+                               class="hidden" 
+                               onchange="importFromCSV()">
+                        <label for="csvFile" 
+                               class="inline-block px-6 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer">
+                            Choose File
+                        </label>
+                        <button type="submit" 
+                                class="w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            Import
+                        </button>
+                    </form>
                 </div>
-                <div class="form-group">
-                  <label for="{{ "InputDue_"|addstr:list.id }}">Due Date</label>
-                  <input type="date" class="form-control" id="{{ "InputDue_"|addstr:list.id }}">
-                </div>
-		        <div class="form-group">
-                    <label for="{{ "InputColor_"|addstr:list.id }}">Color Tag</label>
-                    <input type="color" class="form-control" id="{{ "InputColor_"|addstr:list.id }}" value="#f9f9f9">
-                </div>
-            </form>
-            <div>
-                <span onclick="newElement({{ list.id }})" class="addBtn">Add</span>
             </div>
         </div>
-        <ul id="{{ "List_"|addstr:list.id }}" class="listItemsUnorderedList">
-            {% for list_item in latest_list_items %}
-                {% if list_item.list_id == list.id %}
-                    {% if not list_item.is_done %}
-                        <li style="background-color:{{list_item.tag_color}};" class="listItem">
-                    {% else %}
-                        <li style="background-color:{{list_item.tag_color}};" class="listItem done">
-                    {% endif %}
-                    {% if not list_item.is_done %}
-                            <input type="checkbox" id="{{ "ListItem_"|addstr:list_item.id }}" name="{{ "ListItem_"|addstr:list_item.id }}" value="{{ "ListItem_"|addstr:list_item.id }}">
-                    {% else %}
-                            <input type="checkbox" id="{{ "ListItem_"|addstr:list_item.id }}" name="{{ "ListItem_"|addstr:list_item.id }}" value="{{ "ListItem_"|addstr:list_item.id }}" checked>
-                    {% endif %}
-                            <label for="{{ "ListItem_"|addstr:list_item.id }}">{{ list_item.item_name }}</label>
-                            <br>
-                            <label for="{{ "ListItem_"|addstr:list_item.id }}" class = "text-right">Start date: {{ list_item.created_on }}</label>
-                            <label for="{{ "ListItem_"|addstr:list_item.id }}" style="color:{{list_item.color}};">Due date: {{ list_item.due_date }}</label>
-                            {% if list_item.is_done == 1%}
-                                <p> It took you: {{ list_item.finished_on|timeuntil:list_item.created_on }} to complete</p>
-                            {% endif %}
-                            <span class="close">x</span>
-                        </li>
-                {% endif %}
-            {% endfor %}
-        </ul>
-    <form action="/templates/new-from-todo" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="todo" id="todo-{{ list.id }}" value="{{ list.id }}">
-        <button class="add-template-button" onclick="">Save As Template</button>
-    </form>
-    <form action="/delete-todo" method="post">
-        {% csrf_token %}
-        <input type="hidden" name="todo" id="delete-todo-{{ list.id }}" value="{{ list.id }}">
-        <button class="add-template-button delete" onclick="">Delete</button>
-    </form>
 
-    {% endfor %}
+        <!-- Main Content Area -->
+        <div class="flex-1 p-6">
+            {% if user.is_authenticated %}
+                <div class="mb-6">
+                    <a href="/logout" class="text-sm font-medium text-blue-600 hover:text-blue-500">Logout</a>
+                </div>
+            {% else %}
+                <div class="mb-6">
+                    <a href="/login" class="text-sm font-medium text-blue-600 hover:text-blue-500">Login</a>
+                </div>
+            {% endif %}
 
-
-        {% for list in latest_lists %}
-            <div class="header">
+            {% for list in shared_list %}
+            <div>
                 <h2>
-                    <a href="/todo/{{ list.id }}">{{ list.title_text }} {% if list.list_tag != "none" %}
-                        <button type="button" class="tag-template">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-tag-fill" viewBox="0 0 16 16">
-                                <path d="M2 1a1 1 0 0 0-1 1v4.586a1 1 0 0 0 .293.707l7 7a1 1 0 0 0 1.414 0l4.586-4.586a1 1 0 0 0 0-1.414l-7-7A1 1 0 0 0 6.586 1H2zm4 3.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0z"/>
-                              </svg>
-                            {{ list.list_tag }}
-                        </button>
+                    <a href="/todo/{{ list.id }}">{{ list.title_text }} 
+                        {% if list.list_tag != "none" %}
+                            <button type="button">{{ list.list_tag }}</button>
                         {% endif %}
-                        {% if list.is_shared == True %}
-                            <img src="https://cdn0.iconfinder.com/data/icons/multimedia-261/32/Send-512.png" title="This To-Do list is shared by you." height="16px" width="16px">
-                        {% endif %}
+                        <img src="https://cdn0.iconfinder.com/data/icons/multimedia-261/32/Send-512.png" 
+                             title="This To-Do list is shared by {{ list.user_id }}" 
+                             height="16" width="16">
                     </a>
                 </h2>
-                <!-- <input type="text" id="{{ "InputText_"|addstr:list.id }}" placeholder="New Task">
-                <span onclick="newElement({{ list.id }})" class="addBtn">Add</span> -->
                 <form>
-                    <div class="form-group">
-                      <label for="{{ "InputText_"|addstr:list.id }}">New Task</label>
-                      <input type="text" class="form-control" id="{{ "InputText_"|addstr:list.id }}">
+                    <div>
+                        <label for="{{ "InputText_"|addstr:list.id }}">New Task</label>
+                        <input type="text" id="{{ "InputText_"|addstr:list.id }}" 
+                               class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
-                    <div class="form-group">
-                      <label for="{{ "InputDue_"|addstr:list.id }}">Due Date</label>
-                      <input type="date" class="form-control" id="{{ "InputDue_"|addstr:list.id }}">
+                    <div>
+                        <label for="{{ "InputDue_"|addstr:list.id }}">Due Date</label>
+                        <input type="date" id="{{ "InputDue_"|addstr:list.id }}"
+                               class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
-		            <div class="form-group">
+                    <div>
                         <label for="{{ "InputColor_"|addstr:list.id }}">Color Tag</label>
-                        <input type="color" class="form-control" id="{{ "InputColor_"|addstr:list.id }}" value="#f9f9f9">
+                        <div class="relative">
+                            <input type="color" 
+                                   id="{{ "InputColor_"|addstr:list.id }}" 
+                                   value="#f9f9f9"
+                                   class="w-full h-10 cursor-pointer appearance-none rounded-md border-2 border-white shadow-sm ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   style="background-color: #f9f9f9;">
+                        </div>
                     </div>
                 </form>
                 <div>
-                    <span onclick="newElement({{ list.id }})" class="addBtn">Add</span>
+                    <button onclick="newElement({{ list.id }})">Add</button>
+                </div>
+                <ul id="{{ "List_"|addstr:list.id }}">
+                    {% for list_item in latest_list_items %}
+                        {% if list_item.list_id == list.id %}
+                            <li class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                                <div class="flex-grow">
+                                    <div class="flex items-center">
+                                        <input type="checkbox" 
+                                               id="ListItem_{{ list_item.id }}" 
+                                               name="ListItem_{{ list_item.id }}" 
+                                               value="ListItem_{{ list_item.id }}"
+                                               {% if list_item.is_done %}checked{% endif %}
+                                               onchange="markItemDone(this, {{ list_item.id }})"
+                                               class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer">
+                                        <label for="ListItem_{{ list_item.id }}" class="ml-2 {% if list_item.is_done %}line-through text-gray-500{% endif %}">{{ list_item.item_name }}</label>
+                                    </div>
+                                    <div class="mt-1 text-xs text-gray-500 space-y-1 ml-6">
+                                        {% if list_item.item_text %}
+                                            <div class="item-note text-gray-600">{{ list_item.item_text }}</div>
+                                        {% endif %}
+                                        <div>Start date: {{ list_item.created_on|date:"M d, Y" }}</div>
+                                        <div>Due: {% if list_item.due_date %}{{ list_item.due_date|date:"M d, Y" }}{% else %}Not set{% endif %}</div>
+                                        {% if list_item.is_done == 1%}
+                                            <div class="text-green-600">Completed in: {{ list_item.finished_on|timeuntil:list_item.created_on }}</div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="flex items-center space-x-2 ml-4">
+                                    <button class="edit-btn flex items-center text-blue-600 hover:text-blue-800" data-item-id="{{ list_item.id }}">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                        </svg>
+                                        Edit
+                                    </button>
+                                    <button class="delete-btn flex items-center text-red-600 hover:text-red-800" data-item-id="{{ list_item.id }}">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                        </svg>
+                                        Delete
+                                    </button>
+                                </div>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+                <form action="/templates/new-from-todo" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="todo" id="todo-{{ list.id }}" value="{{ list.id }}">
+                    <button>Save As Template</button>
+                </form>
+                <form action="/delete-todo" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="todo" id="delete-todo-{{ list.id }}" value="{{ list.id }}">
+                    <button>Delete</button>
+                </form>
+            </div>
+        {% endfor %}
+
+        {% for list in latest_lists %}
+            <div class="w-full max-w-4xl bg-white rounded-lg shadow-lg p-6 mb-6">
+                <div class="flex flex-col h-full">
+                    <h2 class="flex items-center mb-4">
+                        <a href="/todo/{{ list.id }}" class="text-2xl font-semibold text-blue-600 hover:text-blue-500">
+                            {{ list.title_text }}
+                            {% if list.list_tag != "none" %}
+                                <span class="ml-2 px-3 py-1 text-sm bg-blue-100 text-blue-800 rounded-full">{{ list.list_tag }}</span>
+                            {% endif %}
+                            {% if list.is_shared == True %}
+                                <img src="https://cdn0.iconfinder.com/data/icons/multimedia-261/32/Send-512.png" 
+                                     title="This To-Do list is shared by you." 
+                                     class="ml-2 h-4 w-4">
+                            {% endif %}
+                        </a>
+                    </h2>
+                    <form class="mb-4 space-y-4">
+                        <div class="flex flex-col">
+                            <label for="{{ "InputText_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">New Task</label>
+                            <input type="text" id="{{ "InputText_"|addstr:list.id }}" 
+                                   class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="{{ "InputDue_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Due Date</label>
+                            <input type="date" id="{{ "InputDue_"|addstr:list.id }}"
+                                   class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+                        <div class="flex flex-col">
+                            <label for="{{ "InputColor_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Color Tag</label>
+                            <input type="color" 
+                                   id="{{ "InputColor_"|addstr:list.id }}" 
+                                   value="#f9f9f9"
+                                   style="-webkit-appearance: none; -moz-appearance: none; appearance: none; background-color: transparent; width: 100%; height: 40px; border: 2px solid white; border-radius: 6px; padding: 0; cursor: pointer; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); outline: 1px solid #E5E7EB;"
+                                   onchange="this.style.backgroundColor = this.value;"
+                                   onclick="this.style.backgroundColor = this.value;">
+                        </div>
+                    </form>
+                    <div class="mb-4">
+                        <button onclick="newElement({{ list.id }})" 
+                                class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                            Add Task
+                        </button>
+                    </div>
+                    <ul id="{{ "List_"|addstr:list.id }}" class="space-y-3 flex-grow">
+                        {% for list_item in latest_list_items %}
+                            {% if list_item.list_id == list.id %}
+                                <li class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                                    <div class="flex-grow">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" 
+                                                   id="ListItem_{{ list_item.id }}" 
+                                                   name="ListItem_{{ list_item.id }}" 
+                                                   value="ListItem_{{ list_item.id }}"
+                                                   {% if list_item.is_done %}checked{% endif %}
+                                                   onchange="markItemDone(this, {{ list_item.id }})"
+                                                   class="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                                            <label for="ListItem_{{ list_item.id }}" class="ml-2 {% if list_item.is_done %}line-through text-gray-500{% endif %}">{{ list_item.item_name }}</label>
+                                        </div>
+                                        <div class="mt-1 text-xs text-gray-500 space-y-1 ml-6">
+                                            {% if list_item.item_text %}
+                                                <div class="item-note text-gray-600">{{ list_item.item_text }}</div>
+                                            {% endif %}
+                                            <div>Start date: {{ list_item.created_on|date:"M d, Y" }}</div>
+                                            <div>Due: {% if list_item.due_date %}{{ list_item.due_date|date:"M d, Y" }}{% else %}Not set{% endif %}</div>
+                                            {% if list_item.is_done == 1%}
+                                                <div class="text-green-600">Completed in: {{ list_item.finished_on|timeuntil:list_item.created_on }}</div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-col space-y-2 ml-4">
+                                        <button class="edit-btn flex items-center text-blue-600 hover:text-blue-800" data-item-id="{{ list_item.id }}">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                            </svg>
+                                            Edit
+                                        </button>
+                                        <button class="delete-btn flex items-center text-red-600 hover:text-red-800" data-item-id="{{ list_item.id }}">
+                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                                            </svg>
+                                            Delete
+                                        </button>
+                                    </div>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                    <div class="mt-6 flex justify-end space-x-4">
+                        <form action="/templates/new-from-todo" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="todo" id="todo-{{ list.id }}" value="{{ list.id }}">
+                            <button class="bg-green-600 text-white px-6 py-2 rounded-md hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2">
+                                Save As Template
+                            </button>
+                        </form>
+                        <form action="/delete-todo" method="post">
+                            {% csrf_token %}
+                            <input type="hidden" name="todo" id="delete-todo-{{ list.id }}" value="{{ list.id }}">
+                            <button class="bg-red-600 text-white px-6 py-2 rounded-md hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2">
+                                Delete List
+                            </button>
+                        </form>
+                    </div>
                 </div>
             </div>
-            <ul id="{{ "List_"|addstr:list.id }}" class="listItemsUnorderedList">
-                {% for list_item in latest_list_items %}
-                    {% if list_item.list_id == list.id %}
-                        {% if not list_item.is_done %}
-                            <li style="background-color:{{list_item.tag_color}};" class="listItem">
-                        {% else %}
-                             <li style="background-color:{{list_item.tag_color}};" class="listItem done">
-                        {% endif %}
-                        {% if not list_item.is_done %}
-                                <input type="checkbox" id="{{ "ListItem_"|addstr:list_item.id }}" name="{{ "ListItem_"|addstr:list_item.id }}" value="{{ "ListItem_"|addstr:list_item.id }}">
-                        {% else %}
-                                <input type="checkbox" id="{{ "ListItem_"|addstr:list_item.id }}" name="{{ "ListItem_"|addstr:list_item.id }}" value="{{ "ListItem_"|addstr:list_item.id }}" checked>
-                        {% endif %}
-                                <label for="{{ "ListItem_"|addstr:list_item.id }}">{{ list_item.item_name }}</label>
-                                <br>
-                                <label for="{{ "ListItem_"|addstr:list_item.id }}" class="text-right">Start date: {{ list_item.created_on }}</label>
-                                <label for="{{ "ListItem_"|addstr:list_item.id }}" style="color:{{list_item.color}};">Due: {{list_item.due_date}}</label>
-                                {% if list_item.is_done == 1%}
-                                    <p> It took you: {{ list_item.finished_on|timeuntil:list_item.created_on }} to complete</p>
-                                {% endif %}
-                                <span class="close">x</span>
-                            </li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        <form action="/templates/new-from-todo" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="todo" id="todo-{{ list.id }}" value="{{ list.id }}">
-            <button class="add-template-button" onclick="">Save As Template</button>
-        </form>
-        <form action="/delete-todo" method="post">
-            {% csrf_token %}
-            <input type="hidden" name="todo" id="delete-todo-{{ list.id }}" value="{{ list.id }}">
-            <button class="add-template-button delete" onclick="">Delete</button>
-        </form>
-        {% endfor %}  
+        {% endfor %}
         {% if not latest_lists %}
             {% if not shared_list %}
-        <div class="header">
-            <h2 id="noListYet">You don't have any todo list!</h2>
-        </div>
+                <div>
+                    <h2>You don't have any todo list!</h2>
+                </div>
             {% endif %}
+        {% endif %}
+        {% if latest_lists or shared_list %}
+            <div id="edit-sidebar" class="fixed top-0 right-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out">
+                <div class="p-6">
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-lg font-semibold">Edit Task</h2>
+                        <button onclick="closeEditSidebar()" class="text-gray-500 hover:text-gray-700">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                    <form id="edit-form" class="space-y-4">
+                        <input type="hidden" id="edit-item-id">
+                        
+                        <div>
+                            <label for="edit-title" class="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                            <input type="text" id="edit-title" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <div>
+                            <label for="edit-note" class="block text-sm font-medium text-gray-700 mb-1">Note</label>
+                            <textarea id="edit-note" rows="3" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        </div>
+
+                        <div>
+                            <label for="edit-due-date" class="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
+                            <input type="date" id="edit-due-date" 
+                                   class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+                        </div>
+
+                        <div class="flex items-center">
+                            <input type="checkbox" id="edit-is-done" 
+                                   class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
+                            <label for="edit-is-done" class="ml-2 block text-sm text-gray-700">Mark as completed</label>
+                        </div>
+
+                        <div class="pt-4">
+                            <button type="submit" 
+                                    class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         {% endif %}
     </div>
 
-    {% if latest_lists or shared_list %}
-        <ul class="rightsidebar" id = "rightsidebar">
-            <li><a>List name</a></li>
-            <li><a>Item name</a></li>
-            <li hidden><a></a></li>
-            <form action="/updateListItem/0" method="post">
-                <p><label for="note">Note:</label></p>
-                <textarea id="note" name="note" rows="4" cols="50"></textarea>
-                <br>
-                <input class="save-button" type="submit" value="Save">
-            </form>
-        </ul>
-    {% endif %}
-</body>
-<script>
-// Click on a close button to hide the current list item
-var close = document.getElementsByClassName("close");
-var i;
-for (i = 0; i < close.length; i++) {
-  close[i].onclick = removeListItem
-}
-
-function removeListItem() {
-    // hide layout first
-    var div = this.parentElement
-    div.style.display = "none"
-
-    // send post request to delete the actual list item
-    var list_item_id = this.parentElement.getElementsByTagName("input")[0].id.toString().substring(9)
-    var httpRequest = new XMLHttpRequest()
-    httpRequest.open('POST', '/removeListItem');
-    httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
-    var params = {
-        "list_item_id": list_item_id
-    }
-    httpRequest.send(JSON.stringify(params))
-}
-
-// When click a list item, restore all othe
-var list = document.getElementsByClassName("listItemsUnorderedList");
-for(let i = 0; i < list.length; i++) {
-    list[i].addEventListener('click', function (ev) {
-        if (ev.target.tagName === 'LI') {
-            {#ev.target.classList.toggle('checked');#}
-            // restore all other checked list items
-            for(let k = 0; k < list.length; k++) {
-                for (let j = 0; j < list[k].children.length; j++) {
-                    if (list[k].children[j].classList.contains('checked') && list[k].children[j] !== ev.target) {
-                        list[k].children[j].classList.remove('checked')
-                    }
+    <script>
+    function editListItem(itemId) {
+        const sidebar = document.getElementById('edit-sidebar');
+        sidebar.classList.add('open');
+        document.getElementById('edit-item-id').value = itemId;
+        
+        const httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function() {
+            if (this.readyState === 4) {
+                if (this.status === 200) {
+                    const response = JSON.parse(this.responseText);
+                    document.getElementById('edit-title').value = response.item_name || '';
+                    document.getElementById('edit-note').value = response.item_text || '';
+                    document.getElementById('edit-due-date').value = response.due_date ? response.due_date.split('T')[0] : '';
+                    document.getElementById('edit-is-done').checked = response.is_done || false;
+                } else {
+                    console.error('Failed to fetch item details');
+                    closeEditSidebar();
                 }
             }
-            // show list item name and its note in the right-side bar
+        };
+        
+        httpRequest.open('POST', '/getListItemById', true);
+        httpRequest.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        httpRequest.send(JSON.stringify({ list_item_id: itemId }));
+    }
 
-            // TODO access database and get list and list item info
-            var item_name = ev.target.children[1].innerHTML
-            // ListItem_{id}, capture id start from index 9
-            var item_id = ev.target.getElementsByTagName("input")[0].id.toString().substring(9)
+    function closeEditSidebar() {
+        document.getElementById('edit-sidebar').classList.remove('open');
+    }
 
-            // this list id will look like List_{id}, so remove the first five letters
-            var list_id = ev.target.parentElement.id.substring(5)
-            var httpRequest = new XMLHttpRequest()
-            {#httpRequest.onreadystatechange = alertContents;#}
-            httpRequest.onreadystatechange = function() {
-              if (this.readyState === 4 && this.status === 200) {
-                  console.log(this.responseText)
-                  var jsonResponse = JSON.parse(this.responseText)
-                  var rightsidebar = document.getElementById("rightsidebar")
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', () => editListItem(btn.dataset.itemId));
+        });
 
-                  var list_title_li_node = rightsidebar.children[0]
-                  var list_text_node = list_title_li_node.children[0]
-                  list_text_node.innerHTML = "List name: " + jsonResponse['list_name']
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', () => deleteListItem(btn.dataset.itemId));
+        });
+    });
 
-                  var item_title_li_node = rightsidebar.children[1]
-                  var item_text_node = item_title_li_node.children[0]
-                  item_text_node.innerHTML = "Item name: " + jsonResponse['item_name']
-
-                  var item_form_node = rightsidebar.children[3]
-                  var item_textarea_node = item_form_node.children[1]
-                  item_textarea_node.value = jsonResponse['item_text']
-
-                  // set the action url, append item id parameter to the end of url
-                  var text_form = rightsidebar.getElementsByTagName("form")[0]
-                  text_form.action = "/updateListItem/" + jsonResponse['item_id']
-                {#document.getElementById('demoGet').innerHTML = this.responseText;#}
-              }
-            };
-            httpRequest.open('POST', '/getListItemById');
-            httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
-            {#var token = {% csrf_token %}#}
-            var params = {
-                "list_item_name": item_name,
-                "list_id": list_id,
-                "list_item_id": item_id,
-            }
-            httpRequest.send(JSON.stringify(params))
-
-
-            // Change the content of right-side bar
-            ev.target.classList.toggle('checked');
-            {#global_count++#}
+    function deleteListItem(itemId) {
+        if (!confirm('Are you sure you want to delete this task?')) {
+            return;
         }
-    }, false);
-}
 
-var listItemsCheckBoxes = document.querySelectorAll("input[type=checkbox]");
-{#let enabledSettings = []#}
-/*
-For IE11 support, replace arrow functions with normal functions and
-use a polyfill for Array.forEach:
-https://vanillajstoolkit.com/polyfills/arrayforeach/
-*/
-
-// mark item as done or undo it
-function markListItemByName() {
-    if (this.parentElement.tagName === 'LI') {
-        this.parentElement.classList.toggle('done');
-        // TODO need to remove the list item from database
-        var item_name = this.nextElementSibling.innerHTML
-        // List_{id}
-        var list_id = this.parentElement.parentElement.id.toString().substring(5)
-        // ListItem_{id}
-        var list_item_id = this.id.toString().substring(9)
-        var httpRequest = new XMLHttpRequest()
-        var is_done = this.parentElement.classList.contains('done')
-        var today = new Date()
-        var finish_on_timestamp = today.getTime() / 1000
-        httpRequest.open('POST', '/markListItem');
-        httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
-        var params = {
-            "list_id": list_id,
-            "list_item_name": item_name,
-            "is_done": is_done,
-            "list_item_id": list_item_id,
-            "finish_on": finish_on_timestamp
-        }
-        httpRequest.send(JSON.stringify(params))
-        window.location.reload();
-    }
-}
-
-
-// Use Array.forEach to add an event listener to each checkbox.
-listItemsCheckBoxes.forEach(function(checkbox) {
-  checkbox.addEventListener('change', markListItemByName)
-});
-
-
-// The naming convention of List is "List_" + list.id
-// The naming convention of ListItem is "ListItem_" + list_item.id
-// Create a new list item when clicking on the "Add" button
-function newElement(list_id, saved_to_database = true) {
-    var li = document.createElement("li");
-    {#var inputBox = document.getElementById(list_id).parentElement.getElementsByTagName("input")[0]#}
-    var inputBox = document.getElementById("InputText_" + list_id.toString());
-    var inputValue = inputBox.value;
-    var inputDue = document.getElementById("InputDue_" + list_id.toString()).value;
-    var inputColor = document.getElementById("InputColor_" + list_id.toString()).value;
-    // var unorderedList = inputBox.parentElement.nextElementSibling
-
-    {#var list_html_tag_id =  #}
-
-    li.className = "listItem";
-    if (inputValue === '') {
-        alert("You must write something!");
-    }
-    else if (inputDue === '') {
-        alert("You must enter due date!")
-    }
-    // else {
-    //     unorderedList.appendChild(li);
-    // }
-    inputBox.value = "";
-
-    // Saved to database if saved_to_database is true
-    if(saved_to_database && inputValue !== '') {
-        var httpRequest = new XMLHttpRequest()
-        var today = new Date()
-        var create_on_timestamp = today.getTime() / 1000
+        const httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
-                // get the newly created item's id and set it as the id of the html tag
-                // add checkbox element
-                var jsonResponse = JSON.parse(this.responseText)
-                var itemCheckBox = document.createElement("input")
-                itemCheckBox.type = "checkbox"
-                // id and name should be unique, currently I set it to be list_name + item_name
-                var itemValue = "ListItem_" + jsonResponse['item_id']
-                itemCheckBox.id = itemValue
-                itemCheckBox.name = itemValue
-                itemCheckBox.value = itemValue
-                itemCheckBox.addEventListener('change', markListItemByName)
-
-                var itemLabel = document.createElement("label")
-                itemLabel.htmlFor  = itemValue
-                itemLabel.innerHTML = inputValue
-                li.append(itemCheckBox)
-                li.append(itemLabel)
-
-                var span = document.createElement("SPAN");
-                var txt = document.createTextNode("\u00D7");
-                span.className = "close";
-                span.onclick = removeListItem
-                span.appendChild(txt);
-                li.appendChild(span);
+            if (this.readyState === 4) {
+                if (this.status === 200) {
+                    // Find and remove the list item from the DOM
+                    const listItem = document.querySelector(`[data-item-id="${itemId}"]`).closest('li');
+                    
+                    listItem.remove();
+                } else {
+                    alert('Failed to delete task. Please try again.');
+                }
             }
         };
-        httpRequest.open('POST', '/addNewListItem');
-        httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
-        var params = {
-            "list_id": list_id,
-            "list_item_name": inputValue,
-            "create_on": create_on_timestamp,
-            "due_date": inputDue,
-	        "tag_color": inputColor
-        }
-        httpRequest.send(JSON.stringify(params))
-    }
-    window.location.reload();
-    {#else {#}
-    {#    return#}
-    {#}#}
 
-    {#for (i = 0; i < close.length; i++) {#}
-    {#    close[i].onclick = removeListItem#}
-    {#}#}
-}
-
-function newTodoList() {
-    var li = document.createElement("li")
-    var li_a = document.createElement("a")
-    var leftSideBar = document.getElementById("todoListInput")
-    var selectedTag = document.getElementById("listTags").value;
-    var listTag = selectedTag;
-    var create_new_tag = false;
-    var sharedUser = document.getElementById("sharedUser").value;
-
-    if(selectedTag==='new'){
-        listTag = document.getElementById("newListTag").value;
-        create_new_tag = true;
+        httpRequest.open('POST', '/removeListItem', true);
+        httpRequest.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        httpRequest.send(JSON.stringify({
+            list_item_id: itemId
+        }));
     }
-    var listTag = selectedTag==='new'? document.getElementById("newListTag").value : selectedTag;
-    var inputValue = leftSideBar.value
-    if (inputValue === '') {
-        alert("You must write something!")
-    }
-    else if(listTag === ''){
-        alert("Select a tag");
-    }
-    else {
-        // add new to-do list to the
-        li_a.innerHTML = inputValue
-        li.appendChild(li_a)
 
-        leftSideBar.insertBefore(li, leftSideBar.children[leftSideBar.children.length - 1]);
-        var today = new Date()
-        var create_on_timestamp = today.getTime() / 1000
-        // TODO Save new todo list to database
+    // Initialize color inputs
+    window.addEventListener('load', function() {
+        document.querySelectorAll('input[type="color"]').forEach(input => {
+            input.style.backgroundColor = input.value;
+        });
+    });
+
+    // Click on a close button to hide the current list item
+    var close = document.getElementsByClassName("close");
+    var i;
+    for (i = 0; i < close.length; i++) {
+      close[i].onclick = removeListItem
+    }
+
+    function removeListItem() {
+        // hide layout first
+        var div = this.parentElement
+        div.style.display = "none"
+
+        // send post request to delete the actual list item
+        var list_item_id = this.parentElement.getElementsByTagName("input")[0].id.toString().substring(9)
         var httpRequest = new XMLHttpRequest()
-        // {#httpRequest.onreadystatechange = alertContents;#}
-        httpRequest.open('POST', '/createNewTodoList');
+        httpRequest.open('POST', '/removeListItem');
         httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
-        // {#var token = {% csrf_token %}#}
         var params = {
-            "list_name": inputValue,
-            "create_on": create_on_timestamp,
-            "list_tag": listTag,
-            "create_new_tag": create_new_tag,
-            "shared_user": sharedUser,
+            "list_item_id": list_item_id
         }
-
-        // httpRequest.responseType = 'text';
-
-        if (httpRequest.readyState === httpRequest.DONE){
-            if (httpRequest.status == 200) {
-                console.log("The request has been made");
-            }
-        }
-
         httpRequest.send(JSON.stringify(params))
+    }
 
+    // When click a list item, restore all othe
+    var list = document.getElementsByClassName("listItemsUnorderedList");
+    for(let i = 0; i < list.length; i++) {
+        list[i].addEventListener('click', function (ev) {
+            if (ev.target.tagName === 'LI') {
+                {#ev.target.classList.toggle('checked');#}
+                // restore all other checked list items
+                for(let k = 0; k < list.length; k++) {
+                    for (let j = 0; j < list[k].children.length; j++) {
+                        if (list[k].children[j].classList.contains('checked') && list[k].children[j] !== ev.target) {
+                            list[k].children[j].classList.remove('checked')
+                        }
+                    }
+                }
+                // show list item name and its note in the right-side bar
+
+                // TODO access database and get list and list item info
+                var item_name = ev.target.children[1].innerHTML
+                // ListItem_{id}, capture id start from index 9
+                var item_id = ev.target.getElementsByTagName("input")[0].id.toString().substring(9)
+
+                // this list id will look like List_{id}, so remove the first five letters
+                var list_id = ev.target.parentElement.id.substring(5)
+                var httpRequest = new XMLHttpRequest()
+                {#httpRequest.onreadystatechange = alertContents;#}
+                httpRequest.onreadystatechange = function() {
+                  if (this.readyState === 4 && this.status === 200) {
+                      console.log(this.responseText)
+                      var jsonResponse = JSON.parse(this.responseText)
+                      var rightsidebar = document.getElementById("rightsidebar")
+
+                      var list_title_li_node = rightsidebar.children[0]
+                      var list_text_node = list_title_li_node.children[0]
+                      list_text_node.innerHTML = "List name: " + jsonResponse['list_name']
+
+                      var item_title_li_node = rightsidebar.children[1]
+                      var item_text_node = item_title_li_node.children[0]
+                      item_text_node.innerHTML = "Item name: " + jsonResponse['item_name']
+
+                      var item_form_node = rightsidebar.children[3]
+                      var item_textarea_node = item_form_node.children[1]
+                      item_textarea_node.value = jsonResponse['item_text']
+
+                      // set the action url, append item id parameter to the end of url
+                      var text_form = rightsidebar.getElementsByTagName("form")[0]
+                      text_form.action = "/updateListItem/" + jsonResponse['item_id']
+                    {#document.getElementById('demoGet').innerHTML = this.responseText;#}
+                  }
+                };
+                httpRequest.open('POST', '/getListItemById');
+                httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
+                {#var token = {% csrf_token %}#}
+                var params = {
+                    "list_item_name": item_name,
+                    "list_id": list_id,
+                    "list_item_id": item_id,
+                }
+                httpRequest.send(JSON.stringify(params))
+
+
+                // Change the content of right-side bar
+                ev.target.classList.toggle('checked');
+                {#global_count++#}
+            }
+        }, false);
+    }
+
+    var listItemsCheckBoxes = document.querySelectorAll("input[type=checkbox]");
+    {#let enabledSettings = []#}
+    /*
+    For IE11 support, replace arrow functions with normal functions and
+    use a polyfill for Array.forEach:
+    https://vanillajstoolkit.com/polyfills/arrayforeach/
+    */
+
+    // mark item as done or undo it
+    function markItemDone(checkbox, itemId) {
+        const label = checkbox.parentElement.querySelector('label');
+        const isChecked = checkbox.checked;
+        
+        const httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function() {
+            if (this.readyState === 4) {
+                if (this.status === 200) {
+                    if (isChecked) {
+                        label.classList.add('line-through', 'text-gray-500');
+                    } else {
+                        label.classList.remove('line-through', 'text-gray-500');
+                    }
+                } else {
+                    // Revert checkbox if request failed
+                    checkbox.checked = !isChecked;
+                    console.error('Failed to update task status');
+                }
+            }
+        };
+        
+        httpRequest.open('POST', '/markListItem', true);
+        httpRequest.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        httpRequest.send(JSON.stringify({
+            list_item_id: itemId,
+            is_done: isChecked
+        }));
+    }
+    
+    // Handle form submission
+    document.getElementById('edit-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const itemId = document.getElementById('edit-item-id').value;
+        const title = document.getElementById('edit-title').value;
+        const note = document.getElementById('edit-note').value;
+        const dueDate = document.getElementById('edit-due-date').value;
+        const isDone = document.getElementById('edit-is-done').checked;
+        
+        const httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function() {
+            if (this.readyState === 4) {
+                if (this.status === 200) {
+                    const response = JSON.parse(this.responseText);
+                    // Update the list item in the UI
+                    const listItem = document.querySelector(`#ListItem_${itemId}`).closest('li');
+                    
+                    // Update title
+                    const label = listItem.querySelector('label');
+                    label.textContent = title;
+                    if (isDone) {
+                        label.classList.add('line-through', 'text-gray-500');
+                    } else {
+                        label.classList.remove('line-through', 'text-gray-500');
+                    }
+                    
+                    // Update checkbox
+                    const checkbox = listItem.querySelector('input[type="checkbox"]');
+                    checkbox.checked = isDone;
+                    
+                    // Update note
+                    let noteDisplay = listItem.querySelector('.item-note');
+                    if (note) {
+                        if (!noteDisplay) {
+                            noteDisplay = document.createElement('div');
+                            noteDisplay.className = 'item-note text-xs text-gray-600 ml-6';
+                            const metadataDiv = listItem.querySelector('.text-gray-500');
+                            metadataDiv.insertBefore(noteDisplay, metadataDiv.firstChild);
+                        }
+                        noteDisplay.textContent = note;
+                    } else if (noteDisplay) {
+                        noteDisplay.remove();
+                    }
+                    
+                    // Update due date with consistent formatting
+                    const dueDateElement = listItem.querySelector('.text-gray-500 div:nth-child(2)');
+                    if (dueDate) {
+                        const date = new Date(dueDate);
+                        const formattedDate = date.toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric', 
+                            year: 'numeric'
+                        });
+                        dueDateElement.textContent = `Due: ${formattedDate}`;
+                    } else {
+                        dueDateElement.textContent = 'Due: Not set';
+                    }
+                    
+                    closeEditSidebar();
+                } else {
+                    alert('Failed to update task. Please try again.');
+                }
+            }
+        };
+        
+        httpRequest.open('POST', `/updateListItem/${itemId}`, true);
+        httpRequest.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        httpRequest.send(JSON.stringify({
+            title: title,
+            note: note,
+            due_date: dueDate,
+            is_done: isDone
+        }));
+    })
+    
+    // Use Array.forEach to add an event listener to each checkbox.
+    listItemsCheckBoxes.forEach(function(checkbox) {
+      checkbox.addEventListener('change', markItemDone)
+    });
+
+
+    // The naming convention of List is "List_" + list.id
+    // The naming convention of ListItem is "ListItem_" + list_item.id
+    // Create a new list item when clicking on the "Add" button
+    function newElement(list_id, saved_to_database = true) {
+        var li = document.createElement("li");
+        {#var inputBox = document.getElementById(list_id).parentElement.getElementsByTagName("input")[0]#}
+        var inputBox = document.getElementById("InputText_" + list_id.toString());
+        var inputValue = inputBox.value;
+        var inputDue = document.getElementById("InputDue_" + list_id.toString()).value;
+        var inputColor = document.getElementById("InputColor_" + list_id.toString()).value;
+        // var unorderedList = inputBox.parentElement.nextElementSibling
+
+        {#var list_html_tag_id =  #}
+
+        li.className = "listItem";
+        if (inputValue === '') {
+            alert("You must write something!");
+        }
+        else if (inputDue === '') {
+            alert("You must enter due date!")
+        }
+        // else {
+        //     unorderedList.appendChild(li);
+        // }
+        inputBox.value = "";
+
+        // Saved to database if saved_to_database is true
+        if(saved_to_database && inputValue !== '') {
+            var httpRequest = new XMLHttpRequest()
+            var today = new Date()
+            var create_on_timestamp = today.getTime() / 1000
+            httpRequest.onreadystatechange = function() {
+                if (this.readyState === 4 && this.status === 200) {
+                    // get the newly created item's id and set it as the id of the html tag
+                    // add checkbox element
+                    var jsonResponse = JSON.parse(this.responseText)
+                    var itemCheckBox = document.createElement("input")
+                    itemCheckBox.type = "checkbox"
+                    // id and name should be unique, currently I set it to be list_name + item_name
+                    var itemValue = "ListItem_" + jsonResponse['item_id']
+                    itemCheckBox.id = itemValue
+                    itemCheckBox.name = itemValue
+                    itemCheckBox.value = itemValue
+                    itemCheckBox.addEventListener('change', markItemDone)
+
+                    var itemLabel = document.createElement("label")
+                    itemLabel.htmlFor  = itemValue
+                    itemLabel.innerHTML = inputValue
+                    li.append(itemCheckBox)
+                    li.append(itemLabel)
+
+                    var span = document.createElement("SPAN");
+                    var txt = document.createTextNode("\u00D7");
+                    span.className = "close";
+                    span.onclick = removeListItem
+                    span.appendChild(txt);
+                    li.appendChild(span);
+                }
+            };
+            httpRequest.open('POST', '/addNewListItem');
+            httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
+            var params = {
+                "list_id": list_id,
+                "list_item_name": inputValue,
+                "create_on": create_on_timestamp,
+                "due_date": inputDue,
+                "tag_color": inputColor
+            }
+            httpRequest.send(JSON.stringify(params))
+        }
         window.location.reload();
+        {#else {#}
+        {#    return#}
+        {#}#}
+
+        {#for (i = 0; i < close.length; i++) {#}
+        {#    close[i].onclick = removeListItem#}
+        {#}#}
     }
-}
 
-function toggleNewTagInput() {
-    var x = document.getElementById("listTags").value
-    if(x === 'new'){
-        document.getElementById("newListTag").type='text';
-    }else{
-        document.getElementById("newListTag").type='hidden';
+    function newTodoList() {
+        var li = document.createElement("li")
+        var li_a = document.createElement("a")
+        var leftSideBar = document.getElementById("todoListInput")
+        var selectedTag = document.getElementById("listTags").value;
+        var listTag = selectedTag;
+        var create_new_tag = false;
+        var sharedUser = document.getElementById("sharedUser").value;
+
+        if(selectedTag==='new'){
+            listTag = document.getElementById("newListTag").value;
+            create_new_tag = true;
+        }
+        var listTag = selectedTag==='new'? document.getElementById("newListTag").value : selectedTag;
+        var inputValue = leftSideBar.value
+        if (inputValue === '') {
+            alert("You must write something!")
+        }
+        else if(listTag === ''){
+            alert("Select a tag");
+        }
+        else {
+            // add new to-do list to the
+            li_a.innerHTML = inputValue
+            li.appendChild(li_a)
+
+            leftSideBar.insertBefore(li, leftSideBar.children[leftSideBar.children.length - 1]);
+            var today = new Date()
+            var create_on_timestamp = today.getTime() / 1000
+            // TODO Save new todo list to database
+            var httpRequest = new XMLHttpRequest()
+            // {#httpRequest.onreadystatechange = alertContents;#}
+            httpRequest.open('POST', '/createNewTodoList');
+            httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
+            // {#var token = {% csrf_token %}#}
+            var params = {
+                "list_name": inputValue,
+                "create_on": create_on_timestamp,
+                "list_tag": listTag,
+                "create_new_tag": create_new_tag,
+                "shared_user": sharedUser,
+            }
+
+            // httpRequest.responseType = 'text';
+
+            if (httpRequest.readyState === httpRequest.DONE){
+                if (httpRequest.status == 200) {
+                    console.log("The request has been made");
+                }
+            }
+
+            httpRequest.send(JSON.stringify(params))
+
+            window.location.reload();
+        }
     }
-}
 
-function importFromCSV(){
-    httpRequest.open('POST', '/import_todo_csv');
-}
+    function toggleNewTagInput() {
+        var x = document.getElementById("listTags").value
+        if(x === 'new'){
+            document.getElementById("newListTag").type='text';
+        }else{
+            document.getElementById("newListTag").type='hidden';
+        }
+    }
 
-</script>
+    function importFromCSV(){
+        httpRequest.open('POST', '/import_todo_csv');
+    }
+    </script>
+    <style>
+    #edit-sidebar {
+        z-index: 1000;
+        border-left: 1px solid #e5e7eb;
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 400px;
+        height: 100vh;
+        background-color: white;
+        padding: 2rem;
+        transform: translateX(100%);
+        transition: transform 0.3s ease-in-out;
+    }
+    
+    #edit-sidebar.open {
+        transform: translateX(0);
+    }
+    
+    .edit-btn {
+        display: flex;
+        align-items: center;
+    }
+    
+    .close {
+        cursor: pointer;
+        font-size: 1.5rem;
+        color: #9CA3AF;
+    }
+    
+    .close:hover {
+        color: #EF4444;
+    }
+    </style>
+</body>
 </html>

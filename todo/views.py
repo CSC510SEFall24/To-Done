@@ -1,6 +1,6 @@
 # MIT License
 
-# Copyright © 2024 Akarsh Reddy Eathamukkala
+# Copyright 2024 Akarsh Reddy Eathamukkala
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
 # this software and associated documentation files (the “Software”), to deal in
@@ -20,7 +20,7 @@
 # FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
 # IN THE SOFTWARE.
 
-# import datetime
+import datetime
 import json
 
 from django.shortcuts import render, redirect, get_object_or_404, get_list_or_404
@@ -63,7 +63,6 @@ from .models import List, ListItem
 # from django.urls import reverse
 # from .models import List, ListItem
 # from django.contrib import messages 
-import datetime
 from dateutil import parser
 
 config = {
@@ -205,17 +204,17 @@ def todo_from_template(request):
     fetched_template = get_object_or_404(Template, pk=template_id)
     todo = List.objects.create(
         title_text=fetched_template.title_text,
-        created_on=timezone.now(),
-        updated_on=timezone.now(),
+        created_on=datetime.datetime.now(),
+        updated_on=datetime.datetime.now(),
         user_id_id=request.user.id
     )
     for template_item in fetched_template.templateitem_set.all():
         ListItem.objects.create(
             item_name=template_item.item_text,
             item_text="",
-            created_on=timezone.now(),
-            finished_on=timezone.now(),
-            due_date=timezone.now(),
+            created_on=datetime.datetime.now(),
+            finished_on=datetime.datetime.now(),
+            due_date=datetime.datetime.now(),
             tag_color=template_item.tag_color,
             list=todo,
             is_done=False,
@@ -248,16 +247,16 @@ def template_from_todo(request):
     fetched_todo = get_object_or_404(List, pk=todo_id)
     new_template = Template.objects.create(
         title_text=fetched_todo.title_text,
-        created_on=timezone.now(),
-        updated_on=timezone.now(),
+        created_on=datetime.datetime.now(),
+        updated_on=datetime.datetime.now(),
         user_id_id=request.user.id
     )
     for todo_item in fetched_todo.listitem_set.all():
         TemplateItem.objects.create(
             item_text=todo_item.item_name,
-            created_on=timezone.now(),
-            finished_on=timezone.now(),
-            due_date=timezone.now(),
+            created_on=datetime.datetime.now(),
+            finished_on=datetime.datetime.now(),
+            due_date=datetime.datetime.now(),
             tag_color=todo_item.tag_color,
             template=new_template
         )
@@ -365,44 +364,69 @@ def removeListItem(request):
 @csrf_exempt
 def updateListItem(request, item_id):
     """
-    Updates the text of a to-do list item based on the provided item ID.
-
-    This view function is called to update the text of a specific to-do list item. It checks if the user 
-    is authenticated; if not, it redirects them to the login page. If the request method is POST, it retrieves
-    the updated text from the request, fetches the ListItem by ID, and updates its text. If the item ID is 
-    invalid (less than or equal to zero), it redirects to the index page. An IntegrityError during the 
-    transaction is caught and logged.
-
+    Update a list item's details including title, note, due date, and completion status.
+    
     Args:
-        request: The HTTP request object containing the user's input data.
-        item_id (int): The ID of the to-do list item to be updated.
-
+        request: The HTTP request object
+        item_id: The ID of the list item to update
+        
     Returns:
-        HttpResponse: Redirects to the home page after updating the item or to the index if item ID is invalid.
-
-    Raises:
-        IntegrityError: If there is a database integrity error while trying to update the list item.
+        JsonResponse: Contains the updated item details if successful, or error message if failed
     """
-    if not request.user.is_authenticated:
-        return redirect("/login")
     if request.method == 'POST':
-        updated_text = request.POST['note']
-        # print(request.POST)
-        print(updated_text)
-        print(item_id)
-        if item_id <= 0:
-            return redirect("index")
         try:
-            with transaction.atomic():
-                todo_list_item = ListItem.objects.get(id=item_id)
-                todo_list_item.item_text = updated_text
-                todo_list_item.save(force_update=True)
-        except IntegrityError as e:
-            print(str(e))
-            print("unknown error occurs when trying to update todo list item text")
-        return redirect("/")
-    else:
-        return redirect("index")
+            body = json.loads(request.body)
+            list_item = ListItem.objects.get(id=item_id)
+            
+            
+            # Update fields if they are provided in the request
+            if 'title' in body:
+                list_item.item_name = body['title']
+            if 'note' in body:
+                list_item.item_text = body['note']
+            if 'due_date' in body:
+                try:
+                    if body['due_date']:
+                        # Parse the date and set it to midnight in the current timezone
+                        date_only = datetime.datetime.strptime(body['due_date'], '%Y-%m-%d')
+                        list_item.due_date = date_only.date()  # Only store the date part
+                    else:
+                        # If no due date is provided, set it to a far future date
+                        list_item.due_date = datetime.date(2099, 12, 31)
+                except (ValueError, TypeError):
+                    return JsonResponse({'error': 'Invalid date format'}, status=400)
+            if 'is_done' in body:
+                list_item.is_done = body['is_done']
+                if body['is_done']:
+                    list_item.finished_on = datetime.datetime.now()  # Use naive datetime
+                else:
+                    # If task is not done, set finished_on to a far future date
+                    list_item.finished_on = datetime.datetime(2099, 12, 31)  # Use naive datetime
+            
+            # Ensure tag_color has a value
+            if not list_item.tag_color:
+                list_item.tag_color = '#000000'  # Default to black
+            
+            list_item.save()
+            # Return the updated item details
+            return JsonResponse({
+                'id': list_item.id,
+                'title': list_item.item_name,
+                'note': list_item.item_text,
+                'due_date': list_item.due_date.isoformat() if list_item.due_date else None,
+                'is_done': list_item.is_done,
+                'finished_on': list_item.finished_on.isoformat() if list_item.finished_on else None,
+                'created_on': list_item.created_on.isoformat()
+            })
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'error': 'Invalid JSON data'}, status=400)
+        except ListItem.DoesNotExist:
+            return JsonResponse({'error': 'List item not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    
+    return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
 
 
 # Add a new to-do list item, called by javascript function
@@ -474,37 +498,31 @@ def markListItem(request):
     Raises:
         IntegrityError: If there is a database integrity error while trying to update the list item.
     """
-    if not request.user.is_authenticated:
-        return redirect("/login")
     if request.method == 'POST':
-        body_unicode = request.body.decode('utf-8')
-        body = json.loads(body_unicode)
-        list_id = body['list_id']
-        list_item_name = body['list_item_name']
-        list_item_id = body['list_item_id']
-        # remove the first " and last "
-        list_item_is_done = True
-        is_done_str = str(body['is_done'])
-        finish_on = body['finish_on']
-        finished_on_time = datetime.datetime.fromtimestamp(finish_on)
-        print("is_done: " + str(body['is_done']))
-        if is_done_str == "0" or is_done_str == "False" or is_done_str == "false":
-            list_item_is_done = False
         try:
-            with transaction.atomic():
-                query_list = List.objects.get(id=list_id)
-                query_item = ListItem.objects.get(id=list_item_id)
-                query_item.is_done = list_item_is_done
-                query_item.finished_on = finished_on_time
-                query_item.save()
-                # Sending an success response
-                return JsonResponse({'item_name': query_item.item_name, 'list_name': query_list.title_text, 'item_text': query_item.item_text})
-        except IntegrityError:
-            print("query list item" + str(list_item_name) + " failed!")
-            JsonResponse({})
-        return HttpResponse("Success!")  # Sending an success response
+            body = json.loads(request.body)
+            list_item_id = body['list_item_id']
+            is_done = body['is_done']
+            
+            list_item = ListItem.objects.get(id=list_item_id)
+            list_item.is_done = is_done
+            list_item.finish_on = datetime.datetime.now() if is_done else None
+            list_item.save()
+            
+            return JsonResponse({
+                'success': True,
+                'is_done': list_item.is_done,
+                'finish_on': list_item.finish_on.isoformat() if list_item.finish_on else None
+            })
+        except (KeyError, json.JSONDecodeError) as e:
+            return JsonResponse({'error': 'Invalid request data'}, status=400)
+        except ListItem.DoesNotExist:
+            return JsonResponse({'error': 'List item not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
     else:
-        return HttpResponse("Request method is not a Post")
+        return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
+
 
 # Get all the list tags by user id
 
@@ -602,35 +620,37 @@ def getListItemById(request):
                                the user's request data.
 
     Returns:
-        JsonResponse: A JSON response containing the item ID, item 
-                      name, list name, and item text if successful, 
-                      or a JSON response indicating a failure.
+        JsonResponse: A JSON response containing the item details if successful, 
+                     or a JSON response indicating a failure.
     """
     if not request.user.is_authenticated:
         return redirect("/login")
     if request.method == 'POST':
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
-        list_id = body['list_id']
-        list_item_name = body['list_item_name']
         list_item_id = body['list_item_id']
-
-        print("list_id: " + list_id)
-        print("list_item_name: " + list_item_name)
-        print("list_item_id: " + list_item_id)
-
+        
         try:
             with transaction.atomic():
-                query_list = List.objects.get(id=list_id)
-                query_item = ListItem.objects.get(id=list_item_id)
-                print("item_text", query_item.item_text)
-                # Sending an success response
-                return JsonResponse({'item_id': query_item.id, 'item_name': query_item.item_name, 'list_name': query_list.title_text, 'item_text': query_item.item_text})
-        except IntegrityError:
-            print("query list item" + str(list_item_name) + " failed!")
-            JsonResponse({})
+                item = ListItem.objects.get(id=list_item_id)
+                todo_list = List.objects.get(id=item.list_id)
+                
+                return JsonResponse({
+                    'item_id': item.id,
+                    'item_name': item.item_name,
+                    'list_name': todo_list.title_text,
+                    'item_text': item.item_text,
+                    'due_date': item.due_date,
+                    'tag_color': item.tag_color
+                })
+        except (ListItem.DoesNotExist, List.DoesNotExist) as e:
+            print(f"Error retrieving item: {str(e)}")
+            return JsonResponse({'error': 'Item not found'}, status=404)
+        except IntegrityError as e:
+            print(f"Database error: {str(e)}")
+            return JsonResponse({'error': 'Database error'}, status=500)
     else:
-        return JsonResponse({'result': 'get'})  # Sending an success response
+        return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
 
 
 # Create a new to-do list, called by javascript function
@@ -959,7 +979,7 @@ def export_todo_csv(request):
 # from django.http import HttpResponseRedirect
 # from django.urls import reverse
 # from .models import List, ListItem
-# from django.contrib import messages
+# from django.contrib import messages 
 # from datetime import datetime
 
 def import_todo_csv(request):
@@ -978,7 +998,7 @@ def import_todo_csv(request):
 
             # Get or create List by title
             # todo_list, created = List.objects.get_or_create(title_text=list_title)
-            todo_list, created = List.objects.get_or_create(title_text=list_title, defaults={'created_on': timezone.now(), 'updated_on': timezone.now()})
+            todo_list, created = List.objects.get_or_create(title_text=list_title, defaults={'created_on': datetime.datetime.now(), 'updated_on': datetime.datetime.now()})
 
             # Convert string values to proper types
             is_done = is_done.lower() in ['true', '1']
@@ -995,7 +1015,7 @@ def import_todo_csv(request):
                 item_text=item_text,
                 is_done=is_done,
                 created_on=created_on,
-                finished_on=timezone.now(),
+                finished_on=datetime.datetime.now(),
                 due_date=due_date,
             )
             # item_name = models.CharField(max_length=50, null=True, blank=True)
@@ -1006,8 +1026,6 @@ def import_todo_csv(request):
     return redirect("todo:index")
 
     # return render(request, 'todo/import_csv.html')
-
-
 
 
 # Delete a template
