@@ -52,6 +52,12 @@ class ListTags(models.Model):
 
 
 class ListItem(models.Model):
+    #priority for a task
+    PRIORITY_CHOICES = [
+        ('High', 'High'),
+        ('Medium', 'Medium'),
+        ('Low', 'Low'),
+    ]
     # the name of a list item
     item_name = models.CharField(max_length=50, null=True, blank=True)
     # the text note of a list item
@@ -62,7 +68,7 @@ class ListItem(models.Model):
     list = models.ForeignKey(List, on_delete=models.CASCADE)
     finished_on = models.DateTimeField()
     due_date = models.DateField()
-    tag_color = models.CharField(max_length=10)
+    priority = models.CharField(max_length=6, choices=PRIORITY_CHOICES, default='Low')
 
     objects = models.Manager()
 
