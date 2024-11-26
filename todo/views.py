@@ -693,10 +693,10 @@ def createNewTodoList(request):
     if request.method == 'POST':
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
-        list_name = body['list_name']
-        create_on = body['create_on']
+        list_name = body['list_title']
+        create_on = datetime.datetime.now().timestamp()
         tag_name = body['list_tag']
-        shared_user = body['shared_user']
+        shared_user = body.get('shared_user', '')
         user_not_found = []
         print(shared_user)
         create_on_time = datetime.datetime.fromtimestamp(create_on)
@@ -709,7 +709,7 @@ def createNewTodoList(request):
                 # print(user_id)
                 todo_list = List(user_id_id=user_id, title_text=list_name,
                                  created_on=create_on_time, updated_on=create_on_time, list_tag=tag_name)
-                if body['create_new_tag']:
+                if body.get('create_new_tag', False):
                     # print('new tag')
                     new_tag = ListTags(
                         user_id_id=user_id, tag_name=tag_name, created_on=create_on_time)
@@ -719,7 +719,7 @@ def createNewTodoList(request):
                 print(todo_list.id)
 
                 # Progress
-                if body['shared_user']:
+                if shared_user:
                     user_list = shared_user.split(' ')
 
                     k = len(user_list)-1
