@@ -822,15 +822,15 @@ function editTask() {
     listItem.querySelector("label").replaceWith(inputBox);
     if (listItem.querySelector(".description")) {
     listItem.querySelector(".description").replaceWith(descriptionBox);
-    listItem.querySelector(".priority").replaceWith(prioritySelect);
+    
     } else {
     var dueDateElement = listItem.querySelector(".due-date");
-    dueDateElement.parentNode.insertBefore(descriptionBox, listItem.querySelector(".text-right"));
-    dueDateElement.parentNode.insertBefore(document.createElement("br"), listItem.querySelector(".text-right"));
-    dueDateElement.parentNode.insertBefore(prioritySelect, listItem.querySelector(".text-right"));
-    dueDateElement.parentNode.insertBefore(document.createElement("br"), listItem.querySelector(".text-right"));
+    dueDateElement.parentNode.insertBefore(descriptionBox, listItem.querySelector(".priority"));
+    dueDateElement.parentNode.insertBefore(document.createElement("br"), listItem.querySelector(".priority"));
+
     }
     listItem.querySelector(".due-date").replaceWith(dueDateInput);
+    listItem.querySelector(".priority").replaceWith(prioritySelect);
 
     //change the edit button to a save button
     this.innerHTML = "Save";
