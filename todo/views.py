@@ -99,83 +99,82 @@ def config_hook(request, template_str):
 # Render the home page with users' to-do lists
 
 
-def index(request, list_id=0):
-    """
-    Renders the index page for the to-do application.
-
-    This view function retrieves the user's lists and items based on their authentication status
-    and whether a specific list ID is provided. If the user is not authenticated, they are redirected
-    to the login page. If a valid list ID is provided, that specific list is retrieved; otherwise, the
-    latest lists for the authenticated user are fetched along with any shared lists. It also gathers
-    the user's list items, saved templates, and list tags, and checks for overdue items to change their color.
-
-    Args:
-        request: The HTTP request object.
-        list_id (int, optional): The ID of the specific list to display. Defaults to 0.
-
-    Returns:
-        HttpResponse: The rendered HTML response for the index page with the context containing:
-            - latest_lists: A list of the user's latest lists or the specific list if an ID is provided.
-            - latest_list_items: A queryset of all list items ordered by their list ID.
-            - templates: A queryset of saved templates for the authenticated user, ordered by creation date.
-            - list_tags: A queryset of tags associated with the user's lists, ordered by creation date.
-            - shared_list: A list of shared lists for the user.
-    """
+def index(request, list_id=None):
     if not request.user.is_authenticated:
-        return redirect("/login")
+        return redirect("todo:login")
+
+    # Get filter parameters
+    due_date = request.GET.get('due_date')
+    priority = request.GET.get('priority')
+
+    # Get user's lists and shared lists
+    if list_id:
+        latest_lists = List.objects.filter(id=list_id)
+    else:
+        latest_lists = List.objects.filter(user_id_id=request.user.id).order_by('-updated_on')
 
     shared_list = []
-
-    if list_id != 0:
-        # latest_lists = List.objects.filter(id=list_id, user_id_id=request.user.id)
-        latest_lists = List.objects.filter(id=list_id)
-
-    else:
-        latest_lists = List.objects.filter(
-            user_id_id=request.user.id).order_by('-updated_on')
-
-        try:
-            query_list_str = SharedList.objects.get(
-                user_id=request.user.id).shared_list_id
-        except SharedList.DoesNotExist:
-            query_list_str = None
-
-        if query_list_str != None:
+    try:
+        query_list_str = SharedList.objects.get(user_id=request.user.id).shared_list_id
+        if query_list_str:
             shared_list_id = query_list_str.split(" ")
             shared_list_id.remove("")
-
-            latest_lists = list(latest_lists)
-
             for list_id in shared_list_id:
-
                 try:
                     query_list = List.objects.get(id=int(list_id))
-                except List.DoesNotExist:
-                    query_list = None
-
-                if query_list:
                     shared_list.append(query_list)
+                except List.DoesNotExist:
+                    continue
+    except SharedList.DoesNotExist:
+        pass
 
-    latest_list_items = ListItem.objects.order_by('list_id')
-    saved_templates = Template.objects.filter(
-        user_id_id=request.user.id).order_by('created_on')
-    list_tags = ListTags.objects.filter(
-        user_id=request.user.id).order_by('created_on')
+    # Get all list items and assign them to their respective lists
+    for todo_list in latest_lists:
+        items = todo_list.listitem_set.all()
+        if due_date or priority:
+            if due_date:
+                items = items.filter(due_date__lte=due_date)
+            if priority:
+                items = items.filter(priority=priority)
+        todo_list.items = items
 
-    # change color when is or over due
+    # Filter out lists with no matching items when filters are applied
+    if due_date or priority:
+        latest_lists = [lst for lst in latest_lists if lst.items.exists()]
+
+    # Apply due date coloring
     cur_date = datetime.date.today()
-    for list_item in latest_list_items:
-        list_item.color = "#FF0000" if cur_date > list_item.due_date else "#000000"
+    for todo_list in latest_lists:
+        for item in todo_list.items:
+            if item.due_date:
+                if item.is_done:
+                    item.color = "#808080"  # Gray for completed items
+                elif item.due_date < cur_date:
+                    item.color = "#FF0000"  # Red for overdue items
+                else:
+                    item.color = "#000000"  # Black for normal items
+            else:
+                item.color = "#000000"
+
+    # Get templates and tags
+    saved_templates = Template.objects.filter(user_id_id=request.user.id).order_by('created_on')
+    list_tags = ListTags.objects.filter(user_id=request.user.id).order_by('created_on')
 
     context = {
-        'latest_lists': latest_lists,
-        'latest_list_items': latest_list_items,
-        'templates': saved_templates,
-        'list_tags': list_tags,
-        'shared_list': shared_list,
+        "latest_lists": latest_lists,
+        "templates": saved_templates,
+        "list_tags": list_tags,
+        "shared_list": shared_list,
+        "selected_list": list_id,
+        "current_filters": {
+            "due_date": due_date if due_date else "",
+            "priority": priority if priority else ""
+        },
+        "user_name": request.user.first_name if request.user.first_name else request.user.username,
         'config': config
     }
-    return render(request, 'todo/index.html', context)
+
+    return render(request, "todo/index.html", context)
 
 # Create a new to-do list from templates and redirect to the to-do list homepage
 
@@ -1071,3 +1070,81 @@ def delete_template(request, template_id):
     else:
         template.delete()
     return redirect('/templates')
+
+
+# Filter lists by due date and priority
+def filter_lists(request):
+    """
+    Filter lists and their items based on due date and priority.
+    
+    Args:
+        request: The HTTP request object containing due_date and priority query parameters
+        
+    Returns:
+        HttpResponse: Renders the index page with filtered lists and items
+    """
+    if not request.user.is_authenticated:
+        return redirect("/login")
+
+    due_date = request.GET.get('due_date')
+    priority = request.GET.get('priority')
+    
+    # Get user's lists
+    latest_lists = List.objects.filter(user_id_id=request.user.id).order_by('-updated_on')
+    
+    # Get shared lists
+    shared_list = []
+    try:
+        query_list_str = SharedList.objects.get(user_id=request.user.id).shared_list_id
+        if query_list_str:
+            shared_list_id = query_list_str.split(" ")
+            shared_list_id.remove("")
+            for list_id in shared_list_id:
+                try:
+                    query_list = List.objects.get(id=int(list_id))
+                    shared_list.append(query_list)
+                except List.DoesNotExist:
+                    continue
+    except SharedList.DoesNotExist:
+        pass
+    
+    # Filter items based on criteria
+    filtered_lists = []
+    all_lists = list(latest_lists) + shared_list
+    
+    for todo_list in all_lists:
+        items = todo_list.listitem_set.all()
+        
+        if due_date:
+            due_date_obj = datetime.datetime.strptime(due_date, '%Y-%m-%d').date()
+            items = items.filter(due_date__lte=due_date_obj)
+            
+        if priority:
+            items = items.filter(priority=priority)
+            
+        # Only include lists that have matching items
+        if items.exists():
+            filtered_lists.append(todo_list)
+    
+    # Get templates and tags
+    saved_templates = Template.objects.filter(user_id_id=request.user.id).order_by('created_on')
+    list_tags = ListTags.objects.filter(user_id=request.user.id).order_by('created_on')
+    
+    # Get all items for the filtered lists
+    latest_list_items = ListItem.objects.filter(list_id__in=[list.id for list in filtered_lists]).order_by('list_id')
+    
+    # Apply due date coloring
+    cur_date = datetime.date.today()
+    for list_item in latest_list_items:
+        list_item.color = "#FF0000" if cur_date > list_item.due_date else "#000000"
+    
+    context = {
+        'latest_lists': filtered_lists,
+        'latest_list_items': latest_list_items,
+        'templates': saved_templates,
+        'list_tags': list_tags,
+        'shared_list': shared_list,
+        'config': config
+    }
+    
+    return render(request, 'todo/index.html', context)

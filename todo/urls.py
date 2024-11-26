@@ -1,6 +1,6 @@
 # MIT License
 
-# Copyright © 2024 Akarsh Reddy Eathamukkala
+# Copyright 2024 Akarsh Reddy Eathamukkala
 
 # Permission is hereby granted, free of charge, to any person obtaining a copy of
 # this software and associated documentation files (the “Software”), to deal in
@@ -55,6 +55,7 @@ urlpatterns = [
     path("logout", views.logout_request, name="logout"),
     path("password_reset", views.password_reset_request, name="password_reset"),
     path('templates/delete/<int:template_id>', views.delete_template, name='delete_template'),
-    path('export_todo_csv', views.export_todo_csv, name='export_todo_csv'),
-    path('import_todo_csv', views.import_todo_csv, name='import_todo_csv'),
+    path('todo/filter', views.filter_lists, name='filter_lists'),
+    path('todo/export_todo_csv', views.export_todo_csv, name='export_todo_csv'),
+    path('todo/import_todo_csv', views.import_todo_csv, name='import_todo_csv'),
 ]
