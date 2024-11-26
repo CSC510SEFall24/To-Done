@@ -64,6 +64,7 @@ class ListItem(models.Model):
     item_text = models.CharField(max_length=100)
     is_done = models.BooleanField(default=False)
     created_on = models.DateTimeField()
+    tags = models.JSONField(default=list, blank=True)
     list = models.ForeignKey(List, on_delete=models.CASCADE)
     finished_on = models.DateTimeField()
     due_date = models.DateField()

@@ -1088,6 +1088,7 @@ def filter_lists(request):
 
     due_date = request.GET.get('due_date')
     priority = request.GET.get('priority')
+    tags = request.GET.getlist('tag')
     
     # Get user's lists
     latest_lists = List.objects.filter(user_id_id=request.user.id).order_by('-updated_on')
@@ -1121,6 +1122,10 @@ def filter_lists(request):
             
         if priority:
             items = items.filter(priority=priority)
+          
+        if tags:
+            for tag in tags:
+                items = items.filter(tags__contains=[tag])
             
         # Only include lists that have matching items
         if items.exists():
