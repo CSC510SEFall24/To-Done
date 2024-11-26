@@ -117,28 +117,18 @@
                     </a>
                 </h2>
                 <form>
-                    <div>
-                        <label for="{{ "InputText_"|addstr:list.id }}">New Task</label>
+                    <div class="flex flex-col">
+                        <label for="{{ "InputText_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">New Task</label>
                         <input type="text" id="{{ "InputText_"|addstr:list.id }}" 
                                class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
-                    <div>
-                        <label for="{{ "InputDue_"|addstr:list.id }}">Due Date</label>
+                    <div class="flex flex-col">
+                        <label for="{{ "InputDue_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Due Date</label>
                         <input type="date" id="{{ "InputDue_"|addstr:list.id }}"
                                class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     </div>
-                    <div>
-                        <label for="{{ "InputColor_"|addstr:list.id }}">Color Tag</label>
-                        <div class="relative">
-                            <input type="color" 
-                                   id="{{ "InputColor_"|addstr:list.id }}" 
-                                   value="#f9f9f9"
-                                   class="w-full h-10 cursor-pointer appearance-none rounded-md border-2 border-white shadow-sm ring-1 ring-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                   style="background-color: #f9f9f9;">
-                        </div>
-                    </div>
-                    <div>
-                        <label for="{{ "InputPriority_"|addstr:list.id }}">Priority</label>
+                    <div class="flex flex-col">
+                        <label for="{{ "InputPriority_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Priority</label>
                         <select id="{{ "InputPriority_"|addstr:list.id }}" 
                                 onchange="updatePriorityColor(this)"
                                 class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
@@ -148,6 +138,13 @@
                             <option value="LOW" data-color="#bbf7d0">Low Priority</option>
                         </select>
                     </div>
+                    <div class="flex flex-col">
+                        <label for="{{ "InputNote_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Note</label>
+                        <textarea id="{{ "InputNote_"|addstr:list.id }}" 
+                                rows="2" 
+                                placeholder="Add a note..."
+                                class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                    </div>
                 </form>
                 <div>
                     <button onclick="newElement({{ list.id }})">Add</button>
@@ -155,49 +152,39 @@
                 <ul id="{{ "List_"|addstr:list.id }}">
                     {% for list_item in latest_list_items %}
                         {% if list_item.list_id == list.id %}
-                            <li class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                            <li id="ListItem_{{ list_item.id }}" class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                                 <div class="flex-grow">
                                     <div class="flex items-center space-x-3">
-                                        <input type="checkbox" 
-                                               id="ListItem_{{ list_item.id }}" 
-                                               name="ListItem_{{ list_item.id }}" 
-                                               value="ListItem_{{ list_item.id }}"
-                                               {% if list_item.is_done %}checked{% endif %}
-                                               onchange="markItemDone(this, {{ list_item.id }})"
-                                               class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                        <label for="ListItem_{{ list_item.id }}" 
-                                               class="{% if list_item.is_done %}line-through text-gray-500{% endif %} flex items-center space-x-2">
-                                            <span class="text-lg">{{ list_item.item_name }}</span>
-                                            <div class="w-3 h-3 rounded-full ml-2
-                                                {% if list_item.priority == 'HIGH' %}bg-red-400
-                                                {% elif list_item.priority == 'MEDIUM' %}bg-yellow-400
-                                                {% else %}bg-green-400{% endif %}">
-                                            </div>
-                                        </label>
+                                        <span class="text-gray-900" style="{% if list_item.is_done %}text-decoration: line-through; color: #9CA3AF;{% endif %}">
+                                            {{ list_item.item_name }}
+                                        </span>
+                                        <span class="w-2 h-2 rounded-full ml-2" style="background-color: {% if list_item.priority == 'HIGH' %}#fecaca{% elif list_item.priority == 'LOW' %}#bbf7d0{% else %}#fde68a{% endif %};"></span>
                                     </div>
-                                    <div class="mt-1 text-xs text-gray-500 space-y-1 ml-6">
-                                        {% if list_item.item_text %}
-                                            <div class="item-note text-gray-600">{{ list_item.item_text }}</div>
-                                        {% endif %}
-                                        <div>Start date: {{ list_item.created_on|date:"M d, Y" }}</div>
-                                        <div>Due: {% if list_item.due_date %}{{ list_item.due_date|date:"M d, Y" }}{% else %}Not set{% endif %}</div>
-                                        {% if list_item.is_done == 1%}
-                                            <div class="text-green-600">Completed in: {{ list_item.finished_on|timeuntil:list_item.created_on }}</div>
-                                        {% endif %}
+                                    {% if list_item.item_text %}
+                                    <div class="text-gray-600 text-sm mt-1">
+                                        {{ list_item.item_text }}
+                                    </div>
+                                    {% endif %}
+                                    <div class="text-gray-500 text-sm">
+                                        Due: {{ list_item.due_date|date:"M d, Y" }}
                                     </div>
                                 </div>
-                                <div class="flex items-center space-x-2 ml-4">
-                                    <button class="edit-btn flex items-center text-blue-600 hover:text-blue-800" data-item-id="{{ list_item.id }}">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <div class="flex items-center space-x-4">
+                                    <input type="checkbox" 
+                                           id="CheckBox_{{ list_item.id }}"
+                                           {% if list_item.is_done %}checked{% endif %} 
+                                           class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                    <button class="edit-btn text-gray-600 hover:text-gray-900" 
+                                            data-item-id="{{ list_item.id }}"
+                                            onclick="editListItem({{ list_item.id }})">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                         </svg>
-                                        Edit
                                     </button>
-                                    <button class="delete-btn flex items-center text-red-600 hover:text-red-800" data-item-id="{{ list_item.id }}">
-                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <button class="text-red-600 hover:text-red-900" onclick="deleteListItem({{ list_item.id }})">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                         </svg>
-                                        Delete
                                     </button>
                                 </div>
                             </li>
@@ -245,15 +232,6 @@
                                    class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                         </div>
                         <div class="flex flex-col">
-                            <label for="{{ "InputColor_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Color Tag</label>
-                            <input type="color" 
-                                   id="{{ "InputColor_"|addstr:list.id }}" 
-                                   value="#f9f9f9"
-                                   style="-webkit-appearance: none; -moz-appearance: none; appearance: none; background-color: transparent; width: 100%; height: 40px; border: 2px solid white; border-radius: 6px; padding: 0; cursor: pointer; box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); outline: 1px solid #E5E7EB;"
-                                   onchange="this.style.backgroundColor = this.value;"
-                                   onclick="this.style.backgroundColor = this.value;">
-                        </div>
-                        <div class="flex flex-col">
                             <label for="{{ "InputPriority_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Priority</label>
                             <select id="{{ "InputPriority_"|addstr:list.id }}" 
                                     onchange="updatePriorityColor(this)"
@@ -264,59 +242,56 @@
                                 <option value="LOW" data-color="#bbf7d0">Low Priority</option>
                             </select>
                         </div>
+                        <div class="flex flex-col">
+                            <label for="{{ "InputNote_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Note</label>
+                            <textarea id="{{ "InputNote_"|addstr:list.id }}" 
+                                    rows="2" 
+                                    placeholder="Add a note..."
+                                    class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                        </div>
                     </form>
                     <div class="mb-4">
                         <button onclick="newElement({{ list.id }})" 
-                                class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                             Add Task
                         </button>
                     </div>
                     <ul id="{{ "List_"|addstr:list.id }}" class="space-y-3 flex-grow">
                         {% for list_item in latest_list_items %}
                             {% if list_item.list_id == list.id %}
-                                <li class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                                <li id="ListItem_{{ list_item.id }}" class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                                     <div class="flex-grow">
                                         <div class="flex items-center space-x-3">
-                                            <input type="checkbox" 
-                                                   id="ListItem_{{ list_item.id }}" 
-                                                   name="ListItem_{{ list_item.id }}" 
-                                                   value="ListItem_{{ list_item.id }}"
-                                                   {% if list_item.is_done %}checked{% endif %}
-                                                   onchange="markItemDone(this, {{ list_item.id }})"
-                                                   class="rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-                                            <label for="ListItem_{{ list_item.id }}" 
-                                                   class="{% if list_item.is_done %}line-through text-gray-500{% endif %} flex items-center space-x-2">
-                                                <span class="text-lg">{{ list_item.item_name }}</span>
-                                                <div class="w-3 h-3 rounded-full ml-2
-                                                    {% if list_item.priority == 'HIGH' %}bg-red-400
-                                                    {% elif list_item.priority == 'MEDIUM' %}bg-yellow-400
-                                                    {% else %}bg-green-400{% endif %}">
-                                                </div>
-                                            </label>
+                                            <span class="text-gray-900" style="{% if list_item.is_done %}text-decoration: line-through; color: #9CA3AF;{% endif %}">
+                                                {{ list_item.item_name }}
+                                            </span>
+                                            <span class="w-2 h-2 rounded-full ml-2" style="background-color: {% if list_item.priority == 'HIGH' %}#fecaca{% elif list_item.priority == 'LOW' %}#bbf7d0{% else %}#fde68a{% endif %};"></span>
                                         </div>
-                                        <div class="mt-1 text-xs text-gray-500 space-y-1 ml-6">
-                                            {% if list_item.item_text %}
-                                                <div class="item-note text-gray-600">{{ list_item.item_text }}</div>
-                                            {% endif %}
-                                            <div>Start date: {{ list_item.created_on|date:"M d, Y" }}</div>
-                                            <div>Due: {% if list_item.due_date %}{{ list_item.due_date|date:"M d, Y" }}{% else %}Not set{% endif %}</div>
-                                            {% if list_item.is_done == 1%}
-                                                <div class="text-green-600">Completed in: {{ list_item.finished_on|timeuntil:list_item.created_on }}</div>
-                                            {% endif %}
+                                        {% if list_item.item_text %}
+                                        <div class="text-gray-600 text-sm mt-1">
+                                            {{ list_item.item_text }}
+                                        </div>
+                                        {% endif %}
+                                        <div class="text-gray-500 text-sm">
+                                            Due: {{ list_item.due_date|date:"M d, Y" }}
                                         </div>
                                     </div>
-                                    <div class="flex flex-col space-y-2 ml-4">
-                                        <button class="edit-btn flex items-center text-blue-600 hover:text-blue-800" data-item-id="{{ list_item.id }}">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <div class="flex items-center space-x-4">
+                                        <input type="checkbox" 
+                                               id="CheckBox_{{ list_item.id }}"
+                                               {% if list_item.is_done %}checked{% endif %} 
+                                               class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                                        <button class="edit-btn text-gray-600 hover:text-gray-900" 
+                                                data-item-id="{{ list_item.id }}"
+                                                onclick="editListItem({{ list_item.id }})">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
                                             </svg>
-                                            Edit
                                         </button>
-                                        <button class="delete-btn flex items-center text-red-600 hover:text-red-800" data-item-id="{{ list_item.id }}">
-                                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <button class="text-red-600 hover:text-red-900" onclick="deleteListItem({{ list_item.id }})">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                                             </svg>
-                                            Delete
                                         </button>
                                     </div>
                                 </li>
@@ -463,7 +438,7 @@
             if (this.readyState === 4) {
                 if (this.status === 200) {
                     // Find and remove the list item from the DOM
-                    const listItem = document.querySelector(`[data-item-id="${itemId}"]`).closest('li');
+                    const listItem = document.querySelector(`#ListItem_${itemId}`).closest('li');
                     
                     listItem.remove();
                 } else {
@@ -489,7 +464,7 @@
     // Click on a close button to hide the current list item
     var close = document.getElementsByClassName("close");
     var i;
-    for (i = 0; i < close.length; i++) {
+    for (i = 0; i <close.length; i++) {
       close[i].onclick = removeListItem
     }
 
@@ -503,6 +478,7 @@
         var httpRequest = new XMLHttpRequest()
         httpRequest.open('POST', '/removeListItem');
         httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
+        // {#var token = {% csrf_token %}#}
         var params = {
             "list_item_id": list_item_id
         }
@@ -576,208 +552,236 @@
         }, false);
     }
 
-    var listItemsCheckBoxes = document.querySelectorAll("input[type=checkbox]");
-    {#let enabledSettings = []#}
-    /*
-    For IE11 support, replace arrow functions with normal functions and
-    use a polyfill for Array.forEach:
-    https://vanillajstoolkit.com/polyfills/arrayforeach/
-    */
-
-    // mark item as done or undo it
-    function markItemDone(checkbox, itemId) {
-        const label = checkbox.parentElement.querySelector('label');
-        const isChecked = checkbox.checked;
+    function markItemDone(event, checkbox, itemId) {
+        // Get the current state before preventing default
+        var currentState = checkbox.checked;
         
-        const httpRequest = new XMLHttpRequest();
+        // Prevent the default checkbox behavior
+        event.preventDefault();
+        event.stopPropagation();
+        
+        var httpRequest = new XMLHttpRequest();
         httpRequest.onreadystatechange = function() {
             if (this.readyState === 4) {
                 if (this.status === 200) {
-                    if (isChecked) {
-                        label.classList.add('line-through', 'text-gray-500');
+                    var jsonResponse = JSON.parse(this.responseText);
+                    console.log("Response:", jsonResponse);  // Debug log
+                    
+                    if (jsonResponse.success) {
+                        var listItem = document.querySelector(`#ListItem_${itemId}`);
+                        if (listItem) {
+                            // Set checkbox state after successful response
+                            checkbox.checked = jsonResponse.is_done;
+                            
+                            var titleSpan = listItem.querySelector('.text-gray-900');
+                            if (jsonResponse.is_done) {
+                                titleSpan.style.textDecoration = 'line-through';
+                                titleSpan.style.color = '#9CA3AF';  // text-gray-400
+                            } else {
+                                titleSpan.style.textDecoration = 'none';
+                                titleSpan.style.color = '#111827';  // text-gray-900
+                            }
+                        }
                     } else {
-                        label.classList.remove('line-through', 'text-gray-500');
+                        console.error('Failed to mark item:', jsonResponse.error);
+                        // Revert checkbox state on error
+                        checkbox.checked = currentState;
                     }
                 } else {
-                    // Revert checkbox if request failed
-                    checkbox.checked = !isChecked;
-                    console.error('Failed to update task status');
+                    console.error('Failed to mark item:', this.responseText);
+                    // Revert checkbox state on error
+                    checkbox.checked = currentState;
                 }
             }
         };
         
-        httpRequest.open('POST', '/markListItem', true);
-        httpRequest.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-        httpRequest.send(JSON.stringify({
-            list_item_id: itemId,
-            is_done: isChecked
-        }));
+        httpRequest.open('POST', '/markListItem');
+        httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8");
+        var params = {
+            "list_item_id": itemId,
+            "is_done": currentState  // Use the current state, not the negation
+        };
+        httpRequest.send(JSON.stringify(params));
     }
     
-    // Handle form submission
-    document.getElementById('edit-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        
-        const itemId = document.getElementById('edit-item-id').value;
-        const title = document.getElementById('edit-title').value;
-        const note = document.getElementById('edit-note').value;
-        const dueDate = document.getElementById('edit-due-date').value;
-        const priority = document.getElementById('edit-priority').value;
-        const isDone = document.getElementById('edit-is-done').checked;
-        
-        const httpRequest = new XMLHttpRequest();
-        httpRequest.onreadystatechange = function() {
-            if (this.readyState === 4) {
-                if (this.status === 200) {
-                    const response = JSON.parse(this.responseText);
-                    // Update the list item in the UI
-                    const listItem = document.querySelector(`#ListItem_${itemId}`).closest('li');
-                    
-                    // Update title
-                    const label = listItem.querySelector('label');
-                    label.textContent = title;
-                    if (isDone) {
-                        label.classList.add('line-through', 'text-gray-500');
-                    } else {
-                        label.classList.remove('line-through', 'text-gray-500');
-                    }
-                    
-                    // Update checkbox
-                    const checkbox = listItem.querySelector('input[type="checkbox"]');
-                    checkbox.checked = isDone;
-                    
-                    // Update note
-                    let noteDisplay = listItem.querySelector('.item-note');
-                    if (note) {
-                        if (!noteDisplay) {
-                            noteDisplay = document.createElement('div');
-                            noteDisplay.className = 'item-note text-xs text-gray-600 ml-6';
-                            const metadataDiv = listItem.querySelector('.text-gray-500');
-                            metadataDiv.insertBefore(noteDisplay, metadataDiv.firstChild);
-                        }
-                        noteDisplay.textContent = note;
-                    } else if (noteDisplay) {
-                        noteDisplay.remove();
-                    }
-                    
-                    // Update due date with consistent formatting
-                    const dueDateElement = listItem.querySelector('.text-gray-500 div:nth-child(2)');
-                    if (dueDate) {
-                        const date = new Date(dueDate);
-                        const formattedDate = date.toLocaleDateString('en-US', { 
-                            month: 'short', 
-                            day: 'numeric', 
-                            year: 'numeric'
-                        });
-                        dueDateElement.textContent = `Due: ${formattedDate}`;
-                    } else {
-                        dueDateElement.textContent = 'Due: Not set';
-                    }
-                    
-                    closeEditSidebar();
-                } else {
-                    alert('Failed to update task. Please try again.');
-                }
-            }
-        };
-        
-        httpRequest.open('POST', `/updateListItem/${itemId}`, true);
-        httpRequest.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-        httpRequest.send(JSON.stringify({
-            title: title,
-            note: note,
-            due_date: dueDate,
-            priority: priority,
-            is_done: isDone
-        }));
-    })
-    
     // Use Array.forEach to add an event listener to each checkbox.
-    listItemsCheckBoxes.forEach(function(checkbox) {
-      checkbox.addEventListener('change', markItemDone)
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('input[type="checkbox"][id^="CheckBox_"]').forEach(function(checkbox) {
+            checkbox.addEventListener('change', function(event) {
+                var itemId = this.id.split('_')[1];
+                markItemDone(event, this, itemId);
+            });
+        });
     });
-
 
     // The naming convention of List is "List_" + list.id
     // The naming convention of ListItem is "ListItem_" + list_item.id
     // Create a new list item when clicking on the "Add" button
     function newElement(list_id, saved_to_database = true) {
         var li = document.createElement("li");
-        {#var inputBox = document.getElementById(list_id).parentElement.getElementsByTagName("input")[0]#}
+        li.id = `ListItem_${list_id}`;
         var inputBox = document.getElementById("InputText_" + list_id.toString());
         var inputValue = inputBox.value;
+        var inputNote = document.getElementById("InputNote_" + list_id.toString()).value;
         var inputDue = document.getElementById("InputDue_" + list_id.toString()).value;
-        var inputColor = document.getElementById("InputColor_" + list_id.toString()).value;
-        var inputPriority = document.getElementById("InputPriority_" + list_id.toString()).value;
-        // var unorderedList = inputBox.parentElement.nextElementSibling
+        var inputPriority = document.getElementById("InputPriority_" + list_id.toString()).value || 'MEDIUM';
 
-        {#var list_html_tag_id =  #}
-
-        li.className = "listItem";
         if (inputValue === '') {
             alert("You must write something!");
+            return;
         }
         else if (inputDue === '') {
-            alert("You must enter due date!")
+            alert("You must enter due date!");
+            return;
         }
-        // else {
-        //     unorderedList.appendChild(li);
-        // }
-        inputBox.value = "";
 
-        // Saved to database if saved_to_database is true
-        if(saved_to_database && inputValue !== '') {
-            var httpRequest = new XMLHttpRequest()
-            var today = new Date()
-            var create_on_timestamp = today.getTime() / 1000
+        if(saved_to_database) {
+            var httpRequest = new XMLHttpRequest();
+            var today = new Date();
+            var create_on_timestamp = today.getTime() / 1000;
             httpRequest.onreadystatechange = function() {
-                if (this.readyState === 4 && this.status === 200) {
-                    // get the newly created item's id and set it as the id of the html tag
-                    // add checkbox element
-                    var jsonResponse = JSON.parse(this.responseText)
-                    var itemCheckBox = document.createElement("input")
-                    itemCheckBox.type = "checkbox"
-                    // id and name should be unique, currently I set it to be list_name + item_name
-                    var itemValue = "ListItem_" + jsonResponse['item_id']
-                    itemCheckBox.id = itemValue
-                    itemCheckBox.name = itemValue
-                    itemCheckBox.value = itemValue
-                    itemCheckBox.addEventListener('change', markItemDone)
-
-                    var itemLabel = document.createElement("label")
-                    itemLabel.htmlFor  = itemValue
-                    itemLabel.innerHTML = inputValue
-                    li.append(itemCheckBox)
-                    li.append(itemLabel)
-
-                    var span = document.createElement("SPAN");
-                    var txt = document.createTextNode("\u00D7");
-                    span.className = "close";
-                    span.onclick = removeListItem
-                    span.appendChild(txt);
-                    li.appendChild(span);
+                if (this.readyState === 4) {
+                    if (this.status === 200) {
+                        try {
+                            var jsonResponse = JSON.parse(this.responseText);
+                            console.log("Response:", jsonResponse);  // Debug log
+                            
+                            if (jsonResponse.error) {
+                                alert("Error: " + jsonResponse.error);
+                                return;
+                            }
+                            
+                            if (jsonResponse.item_id !== -1) {
+                                // Create new list item
+                                var li = document.createElement("li");
+                                li.id = `ListItem_${jsonResponse.item_id}`;
+                                li.className = "flex items-center justify-between p-2 bg-gray-50 rounded-lg";
+                                
+                                // Create main content div
+                                var mainDiv = document.createElement("div");
+                                mainDiv.className = "flex-grow";
+                                
+                                // Create title and priority dot div
+                                var titleDiv = document.createElement("div");
+                                titleDiv.className = "flex items-center space-x-3";
+                                
+                                // Create title
+                                var titleSpan = document.createElement("span");
+                                titleSpan.className = "text-gray-900";
+                                titleSpan.textContent = inputValue;
+                                
+                                // Create priority dot
+                                var dotSpan = document.createElement("span");
+                                dotSpan.className = "w-2 h-2 rounded-full ml-2";
+                                switch(inputPriority) {
+                                    case 'HIGH':
+                                        dotSpan.style.backgroundColor = '#fecaca';
+                                        break;
+                                    case 'MEDIUM':
+                                        dotSpan.style.backgroundColor = '#fde68a';
+                                        break;
+                                    case 'LOW':
+                                        dotSpan.style.backgroundColor = '#bbf7d0';
+                                        break;
+                                }
+                                
+                                titleDiv.appendChild(titleSpan);
+                                titleDiv.appendChild(dotSpan);
+                                
+                                // Create metadata div
+                                var metadataDiv = document.createElement("div");
+                                metadataDiv.className = "text-gray-500 text-sm";
+                                
+                                // Add note if present
+                                if (inputNote) {
+                                    var noteDiv = document.createElement("div");
+                                    noteDiv.className = "text-gray-600 text-sm mt-1";
+                                    noteDiv.textContent = inputNote;
+                                    metadataDiv.appendChild(noteDiv);
+                                }
+                                
+                                // Add due date
+                                var dueDiv = document.createElement("div");
+                                var dueDate = new Date(inputDue);
+                                dueDiv.textContent = "Due: " + dueDate.toLocaleDateString('en-US', { 
+                                    month: 'short', 
+                                    day: 'numeric', 
+                                    year: 'numeric'
+                                });
+                                metadataDiv.appendChild(dueDiv);
+                                
+                                // Assemble the main content
+                                mainDiv.appendChild(titleDiv);
+                                mainDiv.appendChild(metadataDiv);
+                                
+                                // Create actions div
+                                var actionsDiv = document.createElement("div");
+                                actionsDiv.className = "flex items-center space-x-4";
+                                
+                                // Create checkbox
+                                var checkbox = document.createElement("input");
+                                checkbox.type = "checkbox";
+                                checkbox.id = `CheckBox_${jsonResponse.item_id}`;
+                                checkbox.className = "h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded";
+                                checkbox.addEventListener('change', function(event) {
+                                    markItemDone(event, this, jsonResponse.item_id);
+                                });
+                                
+                                // Create edit button
+                                var editButton = document.createElement("button");
+                                editButton.className = "edit-btn text-gray-600 hover:text-gray-900";
+                                editButton.setAttribute("data-item-id", jsonResponse.item_id);
+                                editButton.setAttribute("onclick", `editListItem(${jsonResponse.item_id})`);
+                                editButton.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>';
+                                
+                                // Create delete button
+                                var deleteButton = document.createElement("button");
+                                deleteButton.className = "text-red-600 hover:text-red-900";
+                                deleteButton.setAttribute("onclick", `deleteListItem(${jsonResponse.item_id})`);
+                                deleteButton.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>';
+                                
+                                actionsDiv.appendChild(checkbox);
+                                actionsDiv.appendChild(editButton);
+                                actionsDiv.appendChild(deleteButton);
+                                
+                                // Assemble the list item
+                                li.appendChild(mainDiv);
+                                li.appendChild(actionsDiv);
+                                
+                                // Add to list
+                                var ul = document.getElementById("List_" + list_id);
+                                ul.appendChild(li);
+                                
+                                // Clear input fields
+                                inputBox.value = "";
+                                document.getElementById("InputNote_" + list_id).value = "";
+                                document.getElementById("InputDue_" + list_id).value = "";
+                                document.getElementById("InputPriority_" + list_id).value = "";
+                            } else {
+                                alert("Failed to add task. Please try again.");
+                            }
+                        } catch (e) {
+                            console.error('Error parsing response:', e);
+                            alert('Failed to add task. Please try again.');
+                        }
+                    } else {
+                        console.error('Failed to add task:', this.responseText);
+                        alert('Failed to add task. Please try again.');
+                    }
                 }
             };
             httpRequest.open('POST', '/addNewListItem');
-            httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
+            httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8");
             var params = {
                 "list_id": list_id,
                 "list_item_name": inputValue,
+                "item_text": inputNote,
                 "create_on": create_on_timestamp,
                 "due_date": inputDue,
-                "tag_color": inputColor,
                 "priority": inputPriority
-            }
-            httpRequest.send(JSON.stringify(params))
+            };
+            httpRequest.send(JSON.stringify(params));
         }
-        window.location.reload();
-        {#else {#}
-        {#    return#}
-        {#}#}
-
-        {#for (i = 0; i < close.length; i++) {#}
-        {#    close[i].onclick = removeListItem#}
-        {#}#}
     }
 
     function newTodoList() {

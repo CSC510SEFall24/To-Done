@@ -459,12 +459,21 @@ def addNewListItem(request):
         body = json.loads(body_unicode)
         list_id = body['list_id']
         item_name = body['list_item_name']
+        item_text = body.get('item_text', '')  # Get note text, default to empty string
         create_on = body['create_on']
         create_on_time = datetime.datetime.fromtimestamp(create_on)
         finished_on_time = datetime.datetime.fromtimestamp(create_on)
         due_date = body['due_date']
-        tag_color = body['tag_color']
         priority = body.get('priority', 'MEDIUM')  # Default to MEDIUM if not provided
+
+        # Debug print statements
+        print("Received data:")
+        print(f"list_id: {list_id}")
+        print(f"item_name: {item_name}")
+        print(f"item_text: {item_text}")
+        print(f"create_on: {create_on}")
+        print(f"due_date: {due_date}")
+        print(f"priority: {priority}")
 
         # Validate priority
         if priority not in ['HIGH', 'MEDIUM', 'LOW']:
@@ -478,57 +487,43 @@ def addNewListItem(request):
             with transaction.atomic():
                 todo_list_item = ListItem(
                     item_name=item_name, 
+                    item_text=item_text,
                     created_on=create_on_time, 
                     finished_on=finished_on_time,
                     due_date=due_date, 
-                    tag_color=tag_color, 
                     list_id=list_id, 
-                    item_text="", 
                     is_done=False,
                     priority=priority
                 )
                 todo_list_item.save()
                 result_item_id = todo_list_item.id
-        except IntegrityError:
-            print("unknown error occurs when trying to create and save a new todo list")
-            return JsonResponse({'item_id': -1})
-        # Sending an success response
+                print(f"Successfully created item with id: {result_item_id}")
+        except IntegrityError as e:
+            print(f"IntegrityError: {str(e)}")
+            return JsonResponse({'error': str(e), 'item_id': -1})
+        except Exception as e:
+            print(f"Error: {str(e)}")
+            return JsonResponse({'error': str(e), 'item_id': -1})
+        # Sending a success response
         return JsonResponse({'item_id': result_item_id})
     else:
-        return JsonResponse({'item_id': -1})
+        return JsonResponse({'error': 'Only POST method is allowed', 'item_id': -1})
 
 
 # Mark a to-do list item as done/not done, called by javascript function
 @csrf_exempt
 def markListItem(request):
-    """
-    Marks a to-do list item as done or undoes the action based on the provided data.
-
-    This view function is called to toggle the completion status of a specific list item. It checks if the 
-    user is authenticated; if not, it redirects them to the login page. Upon receiving a POST request, it 
-    decodes the JSON body to get the relevant details, including the item ID and completion status. It updates 
-    the ListItem's is_done field and the finished_on timestamp. If an IntegrityError occurs during the 
-    transaction, it logs the error and returns an empty JsonResponse.
-
-    Args:
-        request: The HTTP request object containing the user's input data.
-
-    Returns:
-        JsonResponse: Contains the name of the item and the list if successful, or an empty response in case of failure.
-
-    Raises:
-        IntegrityError: If there is a database integrity error while trying to update the list item.
-    """
     if request.method == 'POST':
         try:
             body = json.loads(request.body)
             list_item_id = body['list_item_id']
             is_done = body['is_done']
             
-            list_item = ListItem.objects.get(id=list_item_id)
-            list_item.is_done = is_done
-            list_item.finish_on = datetime.datetime.now() if is_done else None
-            list_item.save()
+            with transaction.atomic():
+                list_item = ListItem.objects.get(id=list_item_id)
+                list_item.is_done = is_done
+                list_item.finish_on = datetime.datetime.now() if is_done else None
+                list_item.save()
             
             return JsonResponse({
                 'success': True,
@@ -536,13 +531,13 @@ def markListItem(request):
                 'finish_on': list_item.finish_on.isoformat() if list_item.finish_on else None
             })
         except (KeyError, json.JSONDecodeError) as e:
-            return JsonResponse({'error': 'Invalid request data'}, status=400)
+            return JsonResponse({'success': False, 'error': 'Invalid request data'}, status=400)
         except ListItem.DoesNotExist:
-            return JsonResponse({'error': 'List item not found'}, status=404)
+            return JsonResponse({'success': False, 'error': 'List item not found'}, status=404)
         except Exception as e:
-            return JsonResponse({'error': str(e)}, status=500)
+            return JsonResponse({'success': False, 'error': str(e)}, status=500)
     else:
-        return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
+        return JsonResponse({'success': False, 'error': 'Only POST method is allowed'}, status=405)
 
 
 # Get all the list tags by user id
