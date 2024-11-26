@@ -464,6 +464,12 @@ def addNewListItem(request):
         finished_on_time = datetime.datetime.fromtimestamp(create_on)
         due_date = body['due_date']
         priority = body.get('priority', 'MEDIUM')  # Default to MEDIUM if not provided
+        tags = []
+        
+        # Process tags if provided
+        if 'tags' in body and body['tags']:
+            # Split by comma and strip whitespace
+            tags = [tag.strip() for tag in body['tags'].split(',') if tag.strip()]
 
         # Debug print statements
         print("Received data:")
@@ -473,6 +479,7 @@ def addNewListItem(request):
         print(f"create_on: {create_on}")
         print(f"due_date: {due_date}")
         print(f"priority: {priority}")
+        print(f"tags: {tags}")
 
         # Validate priority
         if priority not in ['HIGH', 'MEDIUM', 'LOW']:
@@ -492,7 +499,8 @@ def addNewListItem(request):
                     due_date=due_date, 
                     list_id=list_id, 
                     is_done=False,
-                    priority=priority
+                    priority=priority,
+                    tags=tags  # Add tags to the item
                 )
                 todo_list_item.save()
                 result_item_id = todo_list_item.id

@@ -114,33 +114,31 @@
                                 </a>
                             </h2>
                             <form class="mb-4 space-y-4">
-                                <div class="flex flex-col">
-                                    <label for="{{ "InputText_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">New Task</label>
-                                    <input type="text" id="{{ "InputText_"|addstr:list.id }}" 
-                                           class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                </div>
-                                <div class="flex flex-col">
-                                    <label for="{{ "InputDue_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Due Date</label>
-                                    <input type="date" id="{{ "InputDue_"|addstr:list.id }}"
-                                           class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                </div>
-                                <div class="flex flex-col">
-                                    <label for="{{ "InputPriority_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Priority</label>
-                                    <select id="{{ "InputPriority_"|addstr:list.id }}" 
-                                            onchange="updatePriorityColor(this)"
-                                            class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="" disabled selected>Priority (Medium default)</option>
-                                        <option value="HIGH" data-color="#fecaca">High Priority</option>
-                                        <option value="MEDIUM" data-color="#fde68a">Medium Priority</option>
-                                        <option value="LOW" data-color="#bbf7d0">Low Priority</option>
-                                    </select>
-                                </div>
-                                <div class="flex flex-col">
-                                    <label for="{{ "InputNote_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Note</label>
-                                    <textarea id="{{ "InputNote_"|addstr:list.id }}" 
-                                            rows="2" 
-                                            placeholder="Add a note..."
-                                            class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                <div class="space-y-4">
+                                    <input type="text" id="InputText_{{ list.id }}" placeholder="New Task" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    
+                                    <textarea id="InputNote_{{ list.id }}" placeholder="Add a note..." class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    
+                                    <input type="text" id="InputTags_{{ list.id }}" placeholder="Add tags (comma separated)" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="InputDue_{{ list.id }}" class="block text-sm font-medium text-gray-700">Due Date</label>
+                                            <input type="date" id="InputDue_{{ list.id }}" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        <div>
+                                            <label for="InputPriority_{{ list.id }}" class="block text-sm font-medium text-gray-700">Priority</label>
+                                            <select id="InputPriority_{{ list.id }}" onchange="updatePriorityColor(this)" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                <option value="HIGH">High</option>
+                                                <option value="MEDIUM" selected>Medium</option>
+                                                <option value="LOW">Low</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <button onclick="newElement({{ list.id }})" class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                        Add Item
+                                    </button>
                                 </div>
                             </form>
                             <div class="mt-4 flex items-center justify-between">
@@ -161,6 +159,13 @@
                                             {% if list_item.item_text %}
                                             <div class="text-gray-600 text-sm mt-1">
                                                 {{ list_item.item_text }}
+                                            </div>
+                                            {% endif %}
+                                            {% if list_item.tags %}
+                                            <div class="flex flex-wrap gap-2 mt-2">
+                                                {% for tag in list_item.tags %}
+                                                    <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">{{ tag }}</span>
+                                                {% endfor %}
                                             </div>
                                             {% endif %}
                                             <div class="text-gray-500 text-sm">
@@ -595,6 +600,7 @@
         var inputNote = document.getElementById("InputNote_" + list_id.toString()).value;
         var inputDue = document.getElementById("InputDue_" + list_id.toString()).value;
         var inputPriority = document.getElementById("InputPriority_" + list_id.toString()).value || 'MEDIUM';
+        var inputTags = document.getElementById("InputTags_" + list_id.toString()).value;
 
         if (inputValue === '') {
             alert("You must write something!");
@@ -670,6 +676,22 @@
                                     metadataDiv.appendChild(noteDiv);
                                 }
                                 
+                                // Add tags if present
+                                if (inputTags) {
+                                    var tagsDiv = document.createElement("div");
+                                    tagsDiv.className = "flex flex-wrap gap-2 mt-2";
+                                    var tags = inputTags.split(',').map(tag => tag.trim()).filter(tag => tag);
+                                    
+                                    tags.forEach(tag => {
+                                        var tagSpan = document.createElement("span");
+                                        tagSpan.className = "px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full";
+                                        tagSpan.textContent = tag;
+                                        tagsDiv.appendChild(tagSpan);
+                                    });
+                                    
+                                    metadataDiv.appendChild(tagsDiv);
+                                }
+                                
                                 // Add due date
                                 var dueDiv = document.createElement("div");
                                 var dueDate = new Date(inputDue);
@@ -727,6 +749,7 @@
                                 document.getElementById("InputNote_" + list_id).value = "";
                                 document.getElementById("InputDue_" + list_id).value = "";
                                 document.getElementById("InputPriority_" + list_id).value = "";
+                                document.getElementById("InputTags_" + list_id).value = "";
                             } else {
                                 alert("Failed to add task. Please try again.");
                             }
@@ -748,7 +771,8 @@
                 "item_text": inputNote,
                 "create_on": create_on_timestamp,
                 "due_date": inputDue,
-                "priority": inputPriority
+                "priority": inputPriority,
+                "tags": inputTags
             };
             httpRequest.send(JSON.stringify(params));
         }
