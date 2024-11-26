@@ -115,7 +115,7 @@ class SharedUsers(models.Model):
     objects = models.Manager()
 
     def __str__(self):
-        return "%s" % str(self.list_id)
+        return str(self.list_id.id)
 
 
 class SharedList(models.Model):
