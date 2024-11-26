@@ -51,12 +51,6 @@ class ListTags(models.Model):
         return "%s" % self.tag_name
 
 
-PRIORITY_CHOICES = [
-    ('High', 'High'),
-    ('Medium', 'Medium'),
-    ('Low', 'Low'),
-]
-
 class ListItem(models.Model):
     # the name of a list item
     item_name = models.CharField(max_length=50, null=True, blank=True)
@@ -69,12 +63,6 @@ class ListItem(models.Model):
     finished_on = models.DateTimeField()
     due_date = models.DateField()
     tag_color = models.CharField(max_length=10)
-    # Add this new field
-    priority = models.CharField(
-        max_length=10,
-        choices=PRIORITY_CHOICES,
-        default='Low',  # Default priority
-    )
 
     objects = models.Manager()
 

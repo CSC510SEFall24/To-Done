@@ -167,11 +167,6 @@ def index(request, list_id=0):
     cur_date = datetime.date.today()
     for list_item in latest_list_items:
         list_item.color = "#FF0000" if cur_date > list_item.due_date else "#000000"
-        list_item.priority_color = {
-            "High": "#FF0000",  # Red
-            "Medium": "#FFA500",  # Orange
-            "Low": "#00FF00",  # Green
-        }.get(list_item.priority, "#000000")
 
     context = {
         'latest_lists': latest_lists,
@@ -394,7 +389,6 @@ def updateListItem(request, item_id):
         updated_text = request.POST.get('item_name', '').strip()
         updated_description = request.POST.get('item_description', "").strip()
         updated_due_date = request.POST.get('due_date', '').strip()
-        updated_priority = request.POST.get('priority', 'Low')  # Add priority update
 
         if not updated_text:
             return JsonResponse({'error': 'Task name cannot be empty'}, status=400)
@@ -407,7 +401,6 @@ def updateListItem(request, item_id):
                 todo_list_item.item_name = updated_text
                 todo_list_item.item_desc = updated_description
                 todo_list_item.due_date = updated_due_date
-                todo_list_item.priority = updated_priority  # Update priority
                 todo_list_item.save()
         except IntegrityError as e:
             return JsonResponse({'error': str(e)}, status=500)
@@ -447,7 +440,6 @@ def addNewListItem(request):
         finished_on_time = datetime.datetime.fromtimestamp(create_on)
         due_date = body['due_date']
         tag_color = body['tag_color']
-        priority = body.get('priority', 'Low')
         print(item_name,item_desc)
         print(create_on)
         result_item_id = -1
@@ -455,7 +447,7 @@ def addNewListItem(request):
         try:
             with transaction.atomic():
                 todo_list_item = ListItem(item_name=item_name, item_desc=item_desc,created_on=create_on_time, finished_on=finished_on_time,
-                                          due_date=due_date, tag_color=tag_color, priority=priority, list_id=list_id,item_text='',  is_done=False)
+                                          due_date=due_date, tag_color=tag_color, list_id=list_id,item_text='',  is_done=False)
                 todo_list_item.save()
                 result_item_id = todo_list_item.id
         except IntegrityError:

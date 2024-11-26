@@ -283,6 +283,7 @@
           cursor: pointer;
           position: relative;
           padding: 12px 8px 12px 40px;
+          margin: 5px 0px;
           list-style-type: none;
           background: #f9f9f9;
           font-size: 18px;
@@ -382,6 +383,18 @@
         .main input[type=color] {
           display: block;
           margin-bottom: 5px;
+        }
+
+        /* Style the dropdown menu */
+        .main select{
+            min-width: 150px;
+            height: 35px;
+            font-size: 16px;
+            box-shadow: 1px 1px 5px #555 inset;
+        }
+        
+        .main .form-control{
+            margin:5px 0px;
         }
 
         /* Style the input checkbox within unordered list item */
@@ -580,15 +593,11 @@
                   <input type="date" class="form-control" id="{{ "InputDue_"|addstr:list.id }}">
                 </div>
 		        <div class="form-group">
-                    <label for="{{ "InputColor_"|addstr:list.id }}">Color Tag</label>
-                    <input type="color" class="form-control" id="{{ "InputColor_"|addstr:list.id }}" value="#f9f9f9">
-                </div>
-                <div class="form-group">
                     <label for="{{ "InputPriority_"|addstr:list.id }}">Priority</label>
                     <select id="{{ "InputPriority_"|addstr:list.id }}" class="form-control">
-                        <option value="Low" selected>Low</option>
-                        <option value="Medium">Medium</option>
                         <option value="High">High</option>
+                        <option value="Medium" >Medium</option>
+                        <option value="Low" selected>Low</option>
                     </select>
                 </div>
             </form>
@@ -600,9 +609,15 @@
             {% for list_item in latest_list_items %}
                 {% if list_item.list_id == list.id %}
                     {% if not list_item.is_done %}
-                        <li style="background-color:{{list_item.tag_color}};" class="listItem">
+                        <li style="background-color: 
+                        {% if list_item.priority == 'High' %} #FF0000; 
+                        {% elif list_item.priority == 'Medium' %} #FFA500; 
+                        {% else %} #FFFF00; {% endif %}" class="listItem">
                     {% else %}
-                        <li style="background-color:{{list_item.tag_color}};" class="listItem done">
+                        <li style="background-color: 
+                        {% if list_item.priority == 'High' %} #FF0000; 
+                        {% elif list_item.priority == 'Medium' %} #FFA500; 
+                        {% else %} #FFFF00; {% endif %}" class="listItem done">
                     {% endif %}
                     {% if not list_item.is_done %}
                             <input type="checkbox" id="{{ "ListItem_"|addstr:list_item.id }}" name="{{ "ListItem_"|addstr:list_item.id }}" value="{{ "ListItem_"|addstr:list_item.id }}">
@@ -614,16 +629,11 @@
                             {% if list_item.item_desc %}
                                     <label for="{{ "ListItem_"|addstr:list_item.id }}" class="description">Description: {{ list_item.item_desc }}</label>
                                     <br>
-                                {% endif %}
+                            {% endif %}
+                            <label class="priority">Priority: {{ list_item.priority }}</label>
+                            <br>
                             <label for="{{ "ListItem_"|addstr:list_item.id }}" class = "text-right">Start date: {{ list_item.created_on }}</label>
                             <label for="{{ "ListItem_"|addstr:list_item.id }}" class="due-date" style="color:{{list_item.color}};">Due date: {{ list_item.due_date }}</label>
-                            <span style="color: 
-                                {% if list_item.priority == 'High' %}red
-                                {% elif list_item.priority == 'Medium' %}orange
-                                {% else %}green
-                                {% endif %}; font-weight: bold;">
-                                Priority: {{ list_item.priority }}
-                            </span>
                             {% if list_item.is_done == 1%}
                                 <p> It took you: {{ list_item.finished_on|timeuntil:list_item.created_on }} to complete</p>
                             {% endif %}
@@ -679,15 +689,11 @@
                       <input type="date" class="form-control" id="{{ "InputDue_"|addstr:list.id }}">
                     </div>
 		            <div class="form-group">
-                        <label for="{{ "InputColor_"|addstr:list.id }}">Color Tag</label>
-                        <input type="color" class="form-control" id="{{ "InputColor_"|addstr:list.id }}" value="#f9f9f9">
-                    </div>
-                    <div class="form-group">
                         <label for="{{ "InputPriority_"|addstr:list.id }}">Priority</label>
                         <select id="{{ "InputPriority_"|addstr:list.id }}" class="form-control">
-                            <option value="Low" selected>Low</option>
-                            <option value="Medium">Medium</option>
                             <option value="High">High</option>
+                            <option value="Medium" >Medium</option>
+                            <option value="Low" selected>Low</option>
                         </select>
                     </div>
                 </form>
@@ -699,9 +705,15 @@
                 {% for list_item in latest_list_items %}
                     {% if list_item.list_id == list.id %}
                         {% if not list_item.is_done %}
-                            <li style="background-color:{{list_item.tag_color}};" class="listItem">
+                            <li style="background-color: 
+                            {% if list_item.priority == 'High' %} #FF0000; 
+                            {% elif list_item.priority == 'Medium' %} #FFA500; 
+                            {% else %} #FFFF00; {% endif %}" class="listItem">
                         {% else %}
-                             <li style="background-color:{{list_item.tag_color}};" class="listItem done">
+                            <li style="background-color: 
+                            {% if list_item.priority == 'High' %} #FF0000; 
+                            {% elif list_item.priority == 'Medium' %} #FFA500; 
+                            {% else %} #FFFF00; {% endif %}" class="listItem done">
                         {% endif %}
                         {% if not list_item.is_done %}
                                 <input type="checkbox" id="{{ "ListItem_"|addstr:list_item.id }}" name="{{ "ListItem_"|addstr:list_item.id }}" value="{{ "ListItem_"|addstr:list_item.id }}">
@@ -714,15 +726,10 @@
                                     <label for="{{ "ListItem_"|addstr:list_item.id }}" class="description">Description: {{ list_item.item_desc }}</label>
                                     <br>
                                 {% endif %}
+                                <label class="priority">Priority: {{ list_item.priority }}</label>
+                                <br>
                                 <label for="{{ "ListItem_"|addstr:list_item.id }}" class="text-right">Start date: {{ list_item.created_on }}</label>
                                 <label for="{{ "ListItem_"|addstr:list_item.id }}" class="due-date" style="color:{{list_item.color}};">Due date: {{list_item.due_date}}</label>
-                                <span style="color: 
-                                {% if list_item.priority == 'High' %}red
-                                {% elif list_item.priority == 'Medium' %}orange
-                                {% else %}green
-                                {% endif %}; font-weight: bold;">
-                                Priority: {{ list_item.priority }}
-                            </span>
                                 {% if list_item.is_done == 1%}
                                     <p> It took you: {{ list_item.finished_on|timeuntil:list_item.created_on }} to complete</p>
                                 {% endif %}
@@ -778,7 +785,8 @@ function editTask() {
     var listItem = this.parentElement;
     var itemName = listItem.querySelector("label").innerHTML;
     var descriptionText = listItem.querySelector(".description")?.innerHTML || "";
-    var dueDate = listItem.querySelector(".due-date").innerHTML.replace("Due date: ", "").trim();;
+    var dueDate = listItem.querySelector(".due-date").innerHTML.replace("Due date: ", "").trim();
+    var priority = listItem.querySelector(".priority").innerHTML.replace("Priority: ", "").trim();
     var itemId = listItem.querySelector("input").id.substring(9);
 
     var inputBox = document.createElement("input");
@@ -801,12 +809,25 @@ function editTask() {
     dueDateInput.value = formattedDate;
     dueDateInput.id = "editDueDate_" + itemId;
 
+    var prioritySelect = document.createElement("select");
+    prioritySelect.id = "editPriority_" + itemId;
+    ["High", "Medium", "Low"].forEach(function (priorityOption) {
+        var option = document.createElement("option");
+        option.value = priorityOption;
+        option.text = priorityOption;
+        if (priorityOption === priority) option.selected = true;
+        prioritySelect.appendChild(option);
+    });
+
     listItem.querySelector("label").replaceWith(inputBox);
     if (listItem.querySelector(".description")) {
     listItem.querySelector(".description").replaceWith(descriptionBox);
+    listItem.querySelector(".priority").replaceWith(prioritySelect);
     } else {
     var dueDateElement = listItem.querySelector(".due-date");
     dueDateElement.parentNode.insertBefore(descriptionBox, listItem.querySelector(".text-right"));
+    dueDateElement.parentNode.insertBefore(document.createElement("br"), listItem.querySelector(".text-right"));
+    dueDateElement.parentNode.insertBefore(prioritySelect, listItem.querySelector(".text-right"));
     dueDateElement.parentNode.insertBefore(document.createElement("br"), listItem.querySelector(".text-right"));
     }
     listItem.querySelector(".due-date").replaceWith(dueDateInput);
@@ -822,10 +843,23 @@ function saveTask() {
     var inputBox = listItem.querySelector("input[type=text]");
     var descriptionBox = listItem.querySelector(".inp-desc");
     var dueDateInput = listItem.querySelector("input[type=date]");
+    var prioritySelect = listItem.querySelector("select");
+
     var updatedText = inputBox.value;
     var updatedDescription = descriptionBox.value.trim();
     var updatedDueDate = dueDateInput.value;
+    var updatedPriority = prioritySelect.value;
     var itemId = inputBox.id.substring(10);
+
+    if (!updatedText) {
+        alert("Task name cannot be empty!");
+        return;
+    }
+
+    if (!updatedDueDate) {
+        alert("Due date cannot be empty!");
+        return;
+    }
 
     //replace the input boxes with updated label and due date span
     var updatedLabel = document.createElement("label");
@@ -844,9 +878,16 @@ function saveTask() {
         year: 'numeric'
     });
 
+    var updatedPrioritySpan = document.createElement("span");
+    updatedPrioritySpan.className = "priority";
+    listItem.style.backgroundColor = updatedPriority === "High" ? "#FF0000" :
+        updatedPriority === "Medium" ? "#FFA500" : "#FFFF00";
+    updatedPrioritySpan.innerHTML = "Priority: " + updatedPriority;
+
     inputBox.replaceWith(updatedLabel);
     descriptionBox.replaceWith(itemDescription);
     dueDateInput.replaceWith(updatedDueDateSpan);
+    prioritySelect.replaceWith(updatedPrioritySpan);
 
     //change the save button back to an edit button
     this.innerHTML = "Edit";
@@ -856,13 +897,9 @@ function saveTask() {
     var httpRequest = new XMLHttpRequest();
     httpRequest.open("POST", "/updateListItem/" + itemId);
     httpRequest.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    var params = {
-        item_name: updatedName,
-        item_description: updatedDescription,
-        due_date: updatedDueDate
-    };
+    var params = `item_name=${encodeURIComponent(updatedText)}&item_description=${encodeURIComponent(updatedDescription)}&due_date=${encodeURIComponent(updatedDueDate)}&priority=${encodeURIComponent(updatedPriority)}`;
     
-    httpRequest.send(JSON.stringify(params));
+    httpRequest.send(params);
 }
     
 // Click on a close button to hide the current list item
@@ -1003,90 +1040,92 @@ listItemsCheckBoxes.forEach(function(checkbox) {
 // Create a new list item when clicking on the "Add" button
 function newElement(list_id, saved_to_database = true) {
     var li = document.createElement("li");
-    {#var inputBox = document.getElementById(list_id).parentElement.getElementsByTagName("input")[0]#}
     var inputBox = document.getElementById("InputText_" + list_id.toString());
     var descBox = document.getElementById("InputDesc_" + list_id.toString());
-    var inputValue = inputBox.value;
-    var descValue = descBox.value;
     var inputDue = document.getElementById("InputDue_" + list_id.toString()).value;
-    var inputColor = document.getElementById("InputColor_" + list_id.toString()).value;
-    var inputPriority = document.getElementById("InputPriority_" + list_id.toString()).value;
-    // var unorderedList = inputBox.parentElement.nextElementSibling
+    var prioritySelect = document.getElementById("InputPriority_" + list_id.toString());
 
-    {#var list_html_tag_id =  #}
+    var inputValue = inputBox.value.trim();
+    var descValue = descBox.value.trim();
+    var priorityValue = prioritySelect.value;
 
-    li.className = "listItem";
     if (inputValue === '') {
         alert("You must write something!");
+        return;
     }
-    else if (inputDue === '') {
-        alert("You must enter due date!")
+    if (inputDue === '') {
+        alert("You must enter a due date!");
+        return;
     }
-    // else {
-    //     unorderedList.appendChild(li);
-    // }
+
+    li.className = "listItem";
+    li.style.backgroundColor = priorityValue === "High" ? "#FF0000" : 
+                               priorityValue === "Medium" ? "#FFA500" : "#FFFF00";
+
+    // Reset input fields
     inputBox.value = "";
-    descBox.value = ""; 
+    descBox.value = "";
+    prioritySelect.value = "Medium"; // Default to "Medium"
 
-    // Saved to database if saved_to_database is true
-    if(saved_to_database && inputValue !== '') {
-        var httpRequest = new XMLHttpRequest()
-        var today = new Date()
-        var create_on_timestamp = today.getTime() / 1000
-        httpRequest.onreadystatechange = function() {
+    // Save to database if required
+    if (saved_to_database && inputValue !== '') {
+        var httpRequest = new XMLHttpRequest();
+        var today = new Date();
+        var create_on_timestamp = today.getTime() / 1000;
+
+        httpRequest.onreadystatechange = function () {
             if (this.readyState === 4 && this.status === 200) {
-                // get the newly created item's id and set it as the id of the html tag
-                // add checkbox element
-                var jsonResponse = JSON.parse(this.responseText)
-                var itemCheckBox = document.createElement("input")
-                itemCheckBox.type = "checkbox"
-                // id and name should be unique, currently I set it to be list_name + item_name
-                var itemValue = "ListItem_" + jsonResponse['item_id']
-                itemCheckBox.id = itemValue
-                itemCheckBox.name = itemValue
-                itemCheckBox.value = itemValue
-                itemCheckBox.addEventListener('change', markListItemByName)
+                var jsonResponse = JSON.parse(this.responseText);
 
-                var itemLabel = document.createElement("label")
-                itemLabel.htmlFor  = itemValue
-                itemLabel.innerHTML = inputValue
+                var itemCheckBox = document.createElement("input");
+                itemCheckBox.type = "checkbox";
+                var itemValue = "ListItem_" + jsonResponse['item_id'];
+                itemCheckBox.id = itemValue;
+                itemCheckBox.name = itemValue;
+                itemCheckBox.value = itemValue;
+                itemCheckBox.addEventListener('change', markListItemByName);
+
+                var itemLabel = document.createElement("label");
+                itemLabel.htmlFor = itemValue;
+                itemLabel.innerHTML = inputValue;
+
                 var itemDesc = document.createElement("span");
                 itemDesc.className = "description";
                 itemDesc.innerHTML = descValue ? " - " + descValue : "";
-                li.append(itemCheckBox)
-                li.append(itemLabel)
-                li.append(itemDesc);
+
+                var itemPriority = document.createElement("span");
+                itemPriority.className = "priority";
+                itemPriority.innerHTML = "Priority: " + priorityValue;
+
+                li.append(itemCheckBox, itemLabel, itemDesc, itemPriority);
 
                 var span = document.createElement("SPAN");
                 var txt = document.createTextNode("\u00D7");
                 span.className = "close";
-                span.onclick = removeListItem
+                span.onclick = removeListItem;
                 span.appendChild(txt);
                 li.appendChild(span);
             }
         };
+
         httpRequest.open('POST', '/addNewListItem');
-        httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8")
-        var params = {
+        httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8");
+
+        var params = JSON.stringify({
             "list_id": list_id,
             "list_item_name": inputValue,
             "list_item_desc": descValue,
             "create_on": create_on_timestamp,
             "due_date": inputDue,
-	        "tag_color": inputColor,
-            "priority": inputPriority
-        }
-        httpRequest.send(JSON.stringify(params))
-    }
-    window.location.reload();
-    {#else {#}
-    {#    return#}
-    {#}#}
+	        "priority": priorityValue
+        });
 
-    {#for (i = 0; i < close.length; i++) {#}
-    {#    close[i].onclick = removeListItem#}
-    {#}#}
+        httpRequest.send(params);
+    }
+
+    window.location.reload();
 }
+
 
 function newTodoList() {
     var li = document.createElement("li")

@@ -324,11 +324,6 @@
             <br>
             {{ list.id }}
             <input type="text" id="{{ "InputText_"|addstr:list.id }}" placeholder="New Task">
-            <select id="{{ "InputPriority_"|addstr:list.id }}" class="form-control">
-                <option value="Low" selected>Low</option>
-                <option value="Medium">Medium</option>
-                <option value="High">High</option>
-            </select>
             <span onclick="newElement({{ list.id }})" class="addBtn">Add</span>
         </div>
         <ul id="{{ "List_"|addstr:list.id }}" class="listItemsUnorderedList">
@@ -345,13 +340,6 @@
                             <input type="checkbox" id="{{ "ListItem_"|addstr:list_item.id }}" name="{{ "ListItem_"|addstr:list_item.id }}" value="{{ "ListItem_"|addstr:list_item.id }}" checked>
                     {% endif %}
                             <label for="{{ "ListItem_"|addstr:list_item.id }}">{{ list_item.item_name }}</label>
-                            <span style="color: 
-                                {% if list_item.priority == 'High' %}red
-                                {% elif list_item.priority == 'Medium' %}orange
-                                {% else %}green
-                                {% endif %}; font-weight: bold;">
-                                Priority: {{ list_item.priority }}
-                            </span>
                             <span class="close">x</span>
                         </li>
                 {% endif %}
@@ -516,7 +504,6 @@ function newElement(list_id, saved_to_database = true) {
     var li = document.createElement("li");
     {#var inputBox = document.getElementById(list_id).parentElement.getElementsByTagName("input")[0]#}
     var inputBox = document.getElementById("InputText_" + list_id.toString());
-    var inputPriority = document.getElementById("InputPriority_" + list_id.toString()).value;
     var inputValue = inputBox.value;
     var unorderedList = inputBox.parentElement.nextElementSibling
 
@@ -570,8 +557,7 @@ function newElement(list_id, saved_to_database = true) {
         var params = {
             "list_id": list_id,
             "list_item_name": inputValue,
-            "create_on": create_on_timestamp,
-            "priority": inputPriority
+            "create_on": create_on_timestamp
         }
         httpRequest.send(JSON.stringify(params))
     }
