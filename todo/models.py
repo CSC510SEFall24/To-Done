@@ -90,12 +90,18 @@ class Template(models.Model):
 
 
 class TemplateItem(models.Model):
+    #priority for a task
+    PRIORITY_CHOICES = [
+        ('High', 'High'),
+        ('Medium', 'Medium'),
+        ('Low', 'Low'),
+    ]
     item_text = models.CharField(max_length=100)
     created_on = models.DateTimeField()
     template = models.ForeignKey(Template, on_delete=models.CASCADE)
     finished_on = models.DateTimeField()
     due_date = models.DateField()
-    tag_color = models.CharField(max_length=10)
+    priority = models.CharField(max_length=6, choices=PRIORITY_CHOICES, default='Low')
 
     objects = models.Manager()
 

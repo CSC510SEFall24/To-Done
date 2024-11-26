@@ -216,7 +216,7 @@ def todo_from_template(request):
             created_on=timezone.now(),
             finished_on=timezone.now(),
             due_date=timezone.now(),
-            tag_color=template_item.tag_color,
+            priority=template_item.priority,
             list=todo,
             is_done=False,
         )
@@ -258,7 +258,7 @@ def template_from_todo(request):
             created_on=timezone.now(),
             finished_on=timezone.now(),
             due_date=timezone.now(),
-            tag_color=todo_item.tag_color,
+            priority=todo_item.priority,
             template=new_template
         )
     return redirect("/templates")
