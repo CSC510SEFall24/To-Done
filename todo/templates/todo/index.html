@@ -900,6 +900,8 @@ function saveTask() {
     var params = `item_name=${encodeURIComponent(updatedText)}&item_description=${encodeURIComponent(updatedDescription)}&due_date=${encodeURIComponent(updatedDueDate)}&priority=${encodeURIComponent(updatedPriority)}`;
     
     httpRequest.send(params);
+    window.location.reload();
+    
 }
     
 // Click on a close button to hide the current list item
