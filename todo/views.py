@@ -1161,3 +1161,41 @@ def filter_lists(request):
     }
     
     return render(request, 'todo/index.html', context)
+
+
+def get_tags_from_all_tasks(request):
+  if not request.user.is_authenticated:
+    return redirect('/login')
+
+  # Fetch the latest lists and shared lists
+  latest_lists = List.objects.filter(user_id_id=request.user.id).order_by('-updated_on')
+  shared_list = []
+  try:
+    query_list_str = SharedList.objects.get(user_id=request.user.id).shared_list_id
+    if query_list_str:
+      shared_list_id = query_list_str.split(" ")
+      shared_list_id.remove("")
+      for list_id in shared_list_id:
+        try:
+          query_list = List.objects.get(id=int(list_id))
+          shared_list.append(query_list)
+        except List.DoesNotExist:
+          continue
+  except SharedList.DoesNotExist:
+    pass
+
+  all_lists = list(latest_lists) + shared_list
+
+  # Collect tags from all tasks in these lists
+  all_tags = set()  # Use a set to avoid duplicates
+  for todo_list in all_lists:
+    tasks = todo_list.listitem_set.all()
+    for task in tasks:
+      if task.tags:
+        all_tags.update(task.tags)  # Assuming task.tags is a list/array of tags
+
+  # Convert the set to a list
+  all_tags_list = list(all_tags)
+
+  # Return as JSON to the frontend
+  return JsonResponse({'tags': all_tags_list})
