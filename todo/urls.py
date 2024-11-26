@@ -58,4 +58,5 @@ urlpatterns = [
     path('todo/filter', views.filter_lists, name='filter_lists'),
     path('todo/export_todo_csv', views.export_todo_csv, name='export_todo_csv'),
     path('todo/import_todo_csv', views.import_todo_csv, name='import_todo_csv'),
+    path('todo/tags', views.get_tags_from_all_tasks, name='get_tags'),
 ]
