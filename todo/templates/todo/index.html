@@ -40,6 +40,7 @@
                     <input type="text" 
                            id="newListTag" 
                            placeholder="New List tag" 
+                           style="display: none;"
                            class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     
                     <button onclick="newTodoList()" 
@@ -99,7 +100,7 @@
             <!-- Main Content -->
             <div class="p-4">
                 <div class="mb-6">
-                    <h1 class="text-2xl font-semibold text-gray-900">Welcome, {{ user_name }}!</h1>
+                    <h1 class="text-2xl font-semibold text-gray-900">Welcome, {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}!</h1>
                 </div>
                 {% if latest_lists %}
                     {% for list in latest_lists %}
@@ -113,41 +114,34 @@
                                     {% endif %}
                                 </a>
                             </h2>
-                            <form class="mb-4 space-y-4">
-                                <div class="flex flex-col">
-                                    <label for="{{ "InputText_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">New Task</label>
-                                    <input type="text" id="{{ "InputText_"|addstr:list.id }}" 
-                                           class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                </div>
-                                <div class="flex flex-col">
-                                    <label for="{{ "InputDue_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Due Date</label>
-                                    <input type="date" id="{{ "InputDue_"|addstr:list.id }}"
-                                           class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                </div>
-                                <div class="flex flex-col">
-                                    <label for="{{ "InputPriority_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Priority</label>
-                                    <select id="{{ "InputPriority_"|addstr:list.id }}" 
-                                            onchange="updatePriorityColor(this)"
-                                            class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                                        <option value="" disabled selected>Priority (Medium default)</option>
-                                        <option value="HIGH" data-color="#fecaca">High Priority</option>
-                                        <option value="MEDIUM" data-color="#fde68a">Medium Priority</option>
-                                        <option value="LOW" data-color="#bbf7d0">Low Priority</option>
-                                    </select>
-                                </div>
-                                <div class="flex flex-col">
-                                    <label for="{{ "InputNote_"|addstr:list.id }}" class="mb-1 text-sm font-medium text-gray-700">Note</label>
-                                    <textarea id="{{ "InputNote_"|addstr:list.id }}" 
-                                            rows="2" 
-                                            placeholder="Add a note..."
-                                            class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                            <form class="mb-4 space-y-4" onsubmit="event.preventDefault(); newElement({{ list.id }});">
+                                <div class="space-y-4">
+                                    <input type="text" id="InputText_{{ list.id }}" placeholder="New Task" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    
+                                    <textarea id="InputNote_{{ list.id }}" placeholder="Add a note..." class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                                    
+                                    <input type="text" id="InputTags_{{ list.id }}" placeholder="Add tags (comma separated)" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                    
+                                    <div class="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label for="InputDue_{{ list.id }}" class="block text-sm font-medium text-gray-700">Due Date</label>
+                                            <input type="date" id="InputDue_{{ list.id }}" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                        </div>
+                                        <div>
+                                            <label for="InputPriority_{{ list.id }}" class="block text-sm font-medium text-gray-700">Priority</label>
+                                            <select id="InputPriority_{{ list.id }}" onchange="updatePriorityColor(this)" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                                                <option value="HIGH" style="background-color: #fecaca">High</option>
+                                                <option value="MEDIUM" selected style="background-color: #fde68a">Medium</option>
+                                                <option value="LOW" style="background-color: #bbf7d0">Low</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                        Add Item
+                                    </button>
                                 </div>
                             </form>
-                            <div class="mt-4 flex items-center justify-between">
-                                <button onclick="newElement({{ list.id }})" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                    Add Item
-                                </button>
-                            </div>
                             <ul id="{{ "List_"|addstr:list.id }}" class="space-y-3 flex-grow mt-4">
                                 {% for list_item in list.items %}
                                     <li id="ListItem_{{ list_item.id }}" class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
@@ -161,6 +155,13 @@
                                             {% if list_item.item_text %}
                                             <div class="text-gray-600 text-sm mt-1">
                                                 {{ list_item.item_text }}
+                                            </div>
+                                            {% endif %}
+                                            {% if list_item.tags %}
+                                            <div class="flex flex-wrap gap-2 mt-2">
+                                                {% for tag in list_item.tags %}
+                                                    <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">{{ tag }}</span>
+                                                {% endfor %}
                                             </div>
                                             {% endif %}
                                             <div class="text-gray-500 text-sm">
@@ -248,6 +249,14 @@
                                 <option value="LOW" {% if current_filters.priority == 'LOW' %}selected{% endif %}>Low Priority</option>
                             </select>
                         </div>
+                        <div>
+                            <label for="tags_filter" class="block text-sm font-medium text-gray-700">Tag</label>
+                            <select id="tags_filter" name="tags_filter"
+                                    class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm">
+                                <option value="">All Tags</option>
+                                <!-- Tags will be populated via JavaScript -->
+                            </select>
+                        </div>
                         <div class="pt-4">
                             <button onclick="applyFilters()" 
                                     class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
@@ -299,11 +308,10 @@
                                 <label for="edit-priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
                                 <select id="edit-priority" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                                        style="background-color: #fde68a;">
-                                    <option value="" disabled selected>Priority (Medium default)</option>
-                                    <option value="HIGH" style="background-color: #fecaca">High Priority</option>
-                                    <option value="MEDIUM" style="background-color: #fde68a">Medium Priority</option>
-                                    <option value="LOW" style="background-color: #bbf7d0">Low Priority</option>
+                                        onchange="updatePriorityColor(this)">
+                                    <option value="MEDIUM" style="background-color: #fde68a">Medium</option>
+                                    <option value="HIGH" style="background-color: #fecaca">High</option>
+                                    <option value="LOW" style="background-color: #bbf7d0">Low</option>
                                 </select>
                             </div>
 
@@ -314,7 +322,9 @@
                             </div>
 
                             <div class="pt-4">
-                                <button type="submit" 
+                                <button type="button" 
+                                        id="save-edit-button"
+                                        onclick="saveEditChanges()"
                                         class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                                     Save Changes
                                 </button>
@@ -595,6 +605,7 @@
         var inputNote = document.getElementById("InputNote_" + list_id.toString()).value;
         var inputDue = document.getElementById("InputDue_" + list_id.toString()).value;
         var inputPriority = document.getElementById("InputPriority_" + list_id.toString()).value || 'MEDIUM';
+        var inputTags = document.getElementById("InputTags_" + list_id.toString()).value;
 
         if (inputValue === '') {
             alert("You must write something!");
@@ -609,6 +620,16 @@
             var httpRequest = new XMLHttpRequest();
             var today = new Date();
             var create_on_timestamp = today.getTime() / 1000;
+            
+            const data = {
+                "list_id": list_id,
+                "list_item_name": inputValue,
+                "item_text": inputNote,
+                "due_date": inputDue,
+                "priority": inputPriority,
+                "tag_list": inputTags
+            };
+
             httpRequest.onreadystatechange = function() {
                 if (httpRequest.readyState === XMLHttpRequest.DONE) {
                     if (httpRequest.status === 200) {
@@ -670,6 +691,22 @@
                                     metadataDiv.appendChild(noteDiv);
                                 }
                                 
+                                // Add tags if present
+                                if (inputTags) {
+                                    var tagsDiv = document.createElement("div");
+                                    tagsDiv.className = "flex flex-wrap gap-2 mt-2";
+                                    var tags = inputTags.split(',').map(tag => tag.trim()).filter(tag => tag);
+                                    
+                                    tags.forEach(tag => {
+                                        var tagSpan = document.createElement("span");
+                                        tagSpan.className = "px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full";
+                                        tagSpan.textContent = tag;
+                                        tagsDiv.appendChild(tagSpan);
+                                    });
+                                    
+                                    metadataDiv.appendChild(tagsDiv);
+                                }
+                                
                                 // Add due date
                                 var dueDiv = document.createElement("div");
                                 var dueDate = new Date(inputDue);
@@ -726,31 +763,25 @@
                                 inputBox.value = "";
                                 document.getElementById("InputNote_" + list_id).value = "";
                                 document.getElementById("InputDue_" + list_id).value = "";
-                                document.getElementById("InputPriority_" + list_id).value = "";
-                            } else {
-                                alert("Failed to add task. Please try again.");
+                                document.getElementById("InputTags_" + list_id).value = "";
+                                document.getElementById("InputPriority_" + list_id).value = "MEDIUM";
+                                updatePriorityColor(document.getElementById("InputPriority_" + list_id));
                             }
                         } catch (e) {
-                            console.error('Error parsing response:', e);
-                            alert('Failed to add task. Please try again.');
+                            console.error("Error parsing response:", e);
+                            alert("Error creating task. Please try again.");
                         }
                     } else {
-                        console.error('Failed to add task:', httpRequest.responseText);
-                        alert('Failed to add task. Please try again.');
+                        console.error("Server returned status:", httpRequest.status);
+                        alert("Error creating task. Please try again.");
                     }
                 }
             };
-            httpRequest.open('POST', '/addNewListItem');
-            httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8");
-            var params = {
-                "list_id": list_id,
-                "list_item_name": inputValue,
-                "item_text": inputNote,
-                "create_on": create_on_timestamp,
-                "due_date": inputDue,
-                "priority": inputPriority
-            };
-            httpRequest.send(JSON.stringify(params));
+
+            httpRequest.open('POST', '/addNewListItem', true);
+            httpRequest.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+            httpRequest.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+            httpRequest.send(JSON.stringify(data));
         }
     }
 
@@ -785,22 +816,34 @@
     }
 
     function toggleNewTagInput() {
-        var x = document.getElementById("listTags").value
-        if(x === 'new'){
-            document.getElementById("newListTag").type='text';
-        }else{
-            document.getElementById("newListTag").type='hidden';
+        var listTags = document.getElementById("listTags");
+        var newListTag = document.getElementById("newListTag");
+        
+        if (listTags.value === 'new') {
+            newListTag.style.display = 'block';
+            newListTag.focus();
+        } else {
+            newListTag.style.display = 'none';
+            newListTag.value = '';
         }
     }
+
+    // Initialize new tag input visibility
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleNewTagInput();
+    });
 
     function importFromCSV(){
         httpRequest.open('POST', '/import_todo_csv');
     }
 
     function updatePriorityColor(selectElement) {
-        const selectedOption = selectElement.options[selectElement.selectedIndex];
-        const color = selectedOption.getAttribute('data-color');
-        selectElement.style.backgroundColor = color || '#fde68a'; // Default to medium priority color
+        const colors = {
+            'HIGH': '#fecaca',  // Light red
+            'MEDIUM': '#fde68a', // Light yellow
+            'LOW': '#bbf7d0'    // Light green
+        };
+        selectElement.style.backgroundColor = colors[selectElement.value] || '#fde68a'; // Default to medium priority color
     }
 
     // Initialize priority dropdowns with correct colors
@@ -808,6 +851,10 @@
         document.querySelectorAll('select[id^="InputPriority_"]').forEach(select => {
             updatePriorityColor(select);
         });
+        const editPriority = document.getElementById('edit-priority');
+        if (editPriority) {
+            updatePriorityColor(editPriority);
+        }
     });
 
     // Initialize sidebars
@@ -817,20 +864,25 @@
     });
 
     function applyFilters() {
-        const dueDate = document.getElementById('filter-due-date').value;
-        const priority = document.getElementById('filter-priority').value;
+        const dueDate = document.getElementById('due_date_filter').value;
+        const priority = document.getElementById('priority_filter').value;
+        const tagsSelect = document.getElementById('tags_filter');
+        const tag = tagsSelect.value;
         
-        // Build the URL with query parameters
         const params = new URLSearchParams();
-        if (dueDate) params.append('due_date', dueDate);
-        if (priority) params.append('priority', priority);
+        if (dueDate && dueDate.trim()) params.append('due_date', dueDate);
+        if (priority && priority.trim()) params.append('priority', priority);
+        if (tag && tag.trim()) params.append('tag', tag);
         
-        // Navigate to the filtered URL
-        window.location.href = `/todo?${params.toString()}`;
+        const finalUrl = '/todo/filter?' + params.toString();
+        window.location.href = finalUrl;
     }
 
     function clearFilters() {
-        window.location.href = '/todo';
+        document.getElementById('due_date_filter').value = '';
+        document.getElementById('priority_filter').value = '';
+        document.getElementById('tags_filter').value = '';
+        window.location.href = '/todo/filter';
     }
 
     // Set initial filter values from URL parameters
@@ -838,10 +890,75 @@
         const urlParams = new URLSearchParams(window.location.search);
         const dueDate = urlParams.get('due_date');
         const priority = urlParams.get('priority');
+        const tag = urlParams.get('tag');
         
-        if (dueDate) document.getElementById('filter-due-date').value = dueDate;
-        if (priority) document.getElementById('filter-priority').value = priority;
+        if (dueDate) document.getElementById('due_date_filter').value = dueDate;
+        if (priority) document.getElementById('priority_filter').value = priority;
+        if (tag) document.getElementById('tags_filter').value = tag;
     });
+
+    // Function to fetch and populate tags
+    function populateTagsFilter() {
+        fetch('/todo/tags')
+            .then(response => response.json())
+            .then(data => {
+                const tagsFilter = document.getElementById('tags_filter');
+                tagsFilter.innerHTML = '<option value="">All Tags</option>';
+                
+                data.tags.forEach(tag => {
+                    const option = document.createElement('option');
+                    option.value = tag;
+                    option.textContent = tag;
+                    tagsFilter.appendChild(option);
+                });
+
+                // Set initial value from URL if present
+                const urlParams = new URLSearchParams(window.location.search);
+                const tag = urlParams.get('tag');
+                if (tag) {
+                    tagsFilter.value = tag;
+                }
+            })
+            .catch(error => console.error('Error fetching tags:', error));
+    }
+
+    // Call populateTagsFilter when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        populateTagsFilter();
+    });
+
+    function saveEditChanges() {
+        const itemId = document.getElementById('edit-item-id').value;
+        const title = document.getElementById('edit-title').value;
+        const note = document.getElementById('edit-note').value;
+        const dueDate = document.getElementById('edit-due-date').value;
+        const priority = document.getElementById('edit-priority').value;
+        const isDone = document.getElementById('edit-is-done').checked;
+
+        const data = {
+            title: title,
+            note: note,
+            due_date: dueDate,
+            priority: priority || 'MEDIUM', // Default to MEDIUM if not selected
+            is_done: isDone
+        };
+
+        const httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function() {
+            if (this.readyState === 4) {
+                if (this.status === 200) {
+                    location.reload();
+                } else {
+                    console.error('Failed to update item:', this.responseText);
+                }
+            }
+        };
+
+        httpRequest.open('POST', `/updateListItem/${itemId}`, true);
+        httpRequest.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        httpRequest.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        httpRequest.send(JSON.stringify(data));
+    }
     </script>
     <style>
     #edit-sidebar {

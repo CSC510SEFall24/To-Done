@@ -345,7 +345,6 @@ def removeListItem(request):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
         list_item_id = body['list_item_id']
-        print("list_item_id: ", list_item_id)
         try:
             with transaction.atomic():
                 being_removed_item = ListItem.objects.get(id=list_item_id)
@@ -459,27 +458,31 @@ def addNewListItem(request):
         list_id = body['list_id']
         item_name = body['list_item_name']
         item_text = body.get('item_text', '')  # Get note text, default to empty string
-        create_on = body['create_on']
-        create_on_time = datetime.datetime.fromtimestamp(create_on)
-        finished_on_time = datetime.datetime.fromtimestamp(create_on)
+        create_on_time = datetime.datetime.now()
+        finished_on_time = create_on_time
         due_date = body['due_date']
         priority = body.get('priority', 'MEDIUM')  # Default to MEDIUM if not provided
+        tags = []
+        
+        # Process tags if provided
+        if 'tags' in body and body['tags']:
+            # Split by comma and strip whitespace
+            tags = [tag.strip() for tag in body['tags'].split(',') if tag.strip()]
 
         # Debug print statements
         print("Received data:")
         print(f"list_id: {list_id}")
         print(f"item_name: {item_name}")
         print(f"item_text: {item_text}")
-        print(f"create_on: {create_on}")
         print(f"due_date: {due_date}")
         print(f"priority: {priority}")
+        print(f"tags: {tags}")
 
         # Validate priority
         if priority not in ['HIGH', 'MEDIUM', 'LOW']:
             return JsonResponse({'error': 'Invalid priority level', 'item_id': -1})
 
         print(item_name)
-        print(create_on)
         result_item_id = -1
         # create a new to-do list object and save it to the database
         try:
@@ -492,7 +495,8 @@ def addNewListItem(request):
                     due_date=due_date, 
                     list_id=list_id, 
                     is_done=False,
-                    priority=priority
+                    priority=priority,
+                    tags=tags  # Add tags to the item
                 )
                 todo_list_item.save()
                 result_item_id = todo_list_item.id
@@ -1088,11 +1092,10 @@ def filter_lists(request):
 
     due_date = request.GET.get('due_date')
     priority = request.GET.get('priority')
+    tag = request.GET.get('tag')
     
     # Get user's lists
     latest_lists = List.objects.filter(user_id_id=request.user.id).order_by('-updated_on')
-    
-    # Get shared lists
     shared_list = []
     try:
         query_list_str = SharedList.objects.get(user_id=request.user.id).shared_list_id
@@ -1110,41 +1113,106 @@ def filter_lists(request):
     
     # Filter items based on criteria
     filtered_lists = []
+    filtered_items_by_list = {}
     all_lists = list(latest_lists) + shared_list
     
     for todo_list in all_lists:
-        items = todo_list.listitem_set.all()
+        items = list(todo_list.listitem_set.all())
+        matching_items = []
         
-        if due_date:
-            due_date_obj = datetime.datetime.strptime(due_date, '%Y-%m-%d').date()
-            items = items.filter(due_date__lte=due_date_obj)
+        for item in items:
+            matches = True
             
-        if priority:
-            items = items.filter(priority=priority)
+            if priority:
+                if item.priority != priority:
+                    matches = False
+                    continue
             
-        # Only include lists that have matching items
-        if items.exists():
+            if due_date and due_date.strip():
+                try:
+                    due_date_obj = datetime.datetime.strptime(due_date, '%Y-%m-%d').date()
+                    if item.due_date > due_date_obj:
+                        matches = False
+                        continue
+                except ValueError:
+                    pass
+            
+            if tag and tag.strip():
+                if not item.tags or not isinstance(item.tags, list) or tag not in item.tags:
+                    matches = False
+                    continue
+            
+            if matches:
+                matching_items.append(item)
+        
+        if matching_items:
             filtered_lists.append(todo_list)
+            filtered_items_by_list[todo_list.id] = matching_items
     
     # Get templates and tags
     saved_templates = Template.objects.filter(user_id_id=request.user.id).order_by('created_on')
     list_tags = ListTags.objects.filter(user_id=request.user.id).order_by('created_on')
     
-    # Get all items for the filtered lists
-    latest_list_items = ListItem.objects.filter(list_id__in=[list.id for list in filtered_lists]).order_by('list_id')
-    
-    # Apply due date coloring
+    # Apply due date coloring to matching items
     cur_date = datetime.date.today()
-    for list_item in latest_list_items:
-        list_item.color = "#FF0000" if cur_date > list_item.due_date else "#000000"
+    for items in filtered_items_by_list.values():
+        for item in items:
+            item.color = "#FF0000" if cur_date > item.due_date else "#000000"
+    
+    # Attach filtered items to their lists
+    for todo_list in filtered_lists:
+        todo_list.items = filtered_items_by_list.get(todo_list.id, [])
     
     context = {
         'latest_lists': filtered_lists,
-        'latest_list_items': latest_list_items,
         'templates': saved_templates,
         'list_tags': list_tags,
         'shared_list': shared_list,
-        'config': config
+        'config': config,
+        'user': request.user,  # Add the user object to the context
+        'current_filters': {
+            'due_date': due_date if due_date and due_date.strip() else '',
+            'priority': priority if priority else '',
+            'tag': tag if tag and tag.strip() else ''
+        }
     }
-    
+        
     return render(request, 'todo/index.html', context)
+
+
+def get_tags_from_all_tasks(request):
+  if not request.user.is_authenticated:
+    return redirect('/login')
+
+  # Fetch the latest lists and shared lists
+  latest_lists = List.objects.filter(user_id_id=request.user.id).order_by('-updated_on')
+  shared_list = []
+  try:
+    query_list_str = SharedList.objects.get(user_id=request.user.id).shared_list_id
+    if query_list_str:
+      shared_list_id = query_list_str.split(" ")
+      shared_list_id.remove("")
+      for list_id in shared_list_id:
+        try:
+          query_list = List.objects.get(id=int(list_id))
+          shared_list.append(query_list)
+        except List.DoesNotExist:
+          continue
+  except SharedList.DoesNotExist:
+    pass
+
+  all_lists = list(latest_lists) + shared_list
+
+  # Collect tags from all tasks in these lists
+  all_tags = set()  # Use a set to avoid duplicates
+  for todo_list in all_lists:
+    tasks = todo_list.listitem_set.all()
+    for task in tasks:
+      if task.tags:
+        all_tags.update(task.tags)  # Assuming task.tags is a list/array of tags
+
+  # Convert the set to a list and sort
+  all_tags_list = sorted(list(all_tags))
+
+  # Return as JSON to the frontend
+  return JsonResponse({'tags': all_tags_list})
