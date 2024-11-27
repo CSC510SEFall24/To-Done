@@ -2,11 +2,23 @@ import pytest
 from django.contrib.auth.models import User
 from todo.models import List, ListTags, ListItem, Template, TemplateItem, SharedUsers, SharedList
 from datetime import datetime, date
+import factory
+import uuid
+
+
+# Factory for creating unique users
+class UserFactory(factory.django.DjangoModelFactory):
+    class Meta:
+        model = User
+
+    username = factory.LazyAttribute(lambda _: f"user_{uuid.uuid4()}")
+    email = factory.LazyAttribute(lambda obj: f"{obj.username}@example.com")
+    password = factory.PostGenerationMethodCall("set_password", "password123")
 
 
 @pytest.mark.django_db
 def test_list_creation():
-    user = User.objects.create(username="testuser")
+    user = UserFactory()
     todo_list = List.objects.create(
         title_text="Test List",
         created_on=datetime.now(),
@@ -18,7 +30,7 @@ def test_list_creation():
 
 @pytest.mark.django_db
 def test_list_tags_creation():
-    user = User.objects.create(username="testuser")
+    user = UserFactory()
     tag = ListTags.objects.create(
         user_id=user,
         tag_name="Important",
@@ -29,7 +41,7 @@ def test_list_tags_creation():
 
 @pytest.mark.django_db
 def test_list_item_creation():
-    user = User.objects.create(username="testuser")
+    user = UserFactory()
     todo_list = List.objects.create(
         title_text="Test List",
         created_on=datetime.now(),
@@ -50,7 +62,7 @@ def test_list_item_creation():
 
 @pytest.mark.django_db
 def test_template_creation():
-    user = User.objects.create(username="testuser")
+    user = UserFactory()
     template = Template.objects.create(
         title_text="Test Template",
         created_on=datetime.now(),
@@ -62,7 +74,7 @@ def test_template_creation():
 
 @pytest.mark.django_db
 def test_template_item_creation():
-    user = User.objects.create(username="testuser")
+    user = UserFactory()
     template = Template.objects.create(
         title_text="Test Template",
         created_on=datetime.now(),
@@ -82,10 +94,12 @@ def test_template_item_creation():
 
 @pytest.mark.django_db
 def test_shared_users_creation():
+    user = UserFactory()
     todo_list = List.objects.create(
         title_text="Shared List",
         created_on=datetime.now(),
-        updated_on=datetime.now()
+        updated_on=datetime.now(),
+        user_id=user
     )
     shared_user = SharedUsers.objects.create(
         list_id=todo_list,
@@ -96,7 +110,7 @@ def test_shared_users_creation():
 
 @pytest.mark.django_db
 def test_shared_list_creation():
-    user = User.objects.create(username="testuser")
+    user = UserFactory()
     shared_list = SharedList.objects.create(
         user=user,
         shared_list_id="12345"
@@ -116,10 +130,12 @@ def test_list_default_tag():
 
 @pytest.mark.django_db
 def test_list_item_priority_choices():
+    user = UserFactory()
     todo_list = List.objects.create(
         title_text="Priority List",
         created_on=datetime.now(),
-        updated_on=datetime.now()
+        updated_on=datetime.now(),
+        user_id=user
     )
     item = ListItem.objects.create(
         list=todo_list,
@@ -135,7 +151,7 @@ def test_list_item_priority_choices():
 
 @pytest.mark.django_db
 def test_template_item_tag_color():
-    user = User.objects.create(username="testuser")
+    user = UserFactory()
     template = Template.objects.create(
         title_text="Colored Template",
         created_on=datetime.now(),
@@ -155,10 +171,12 @@ def test_template_item_tag_color():
 
 @pytest.mark.django_db
 def test_list_item_tags_field():
+    user = UserFactory()
     todo_list = List.objects.create(
         title_text="Tagged List",
         created_on=datetime.now(),
-        updated_on=datetime.now()
+        updated_on=datetime.now(),
+        user_id=user
     )
     item = ListItem.objects.create(
         list=todo_list,
@@ -201,10 +219,12 @@ def test_shared_list_optional_user():
 
 @pytest.mark.django_db
 def test_list_item_is_done_default():
+    user = UserFactory()
     todo_list = List.objects.create(
         title_text="Done Status",
         created_on=datetime.now(),
-        updated_on=datetime.now()
+        updated_on=datetime.now(),
+        user_id=user
     )
     item = ListItem.objects.create(
         list=todo_list,
@@ -218,7 +238,7 @@ def test_list_item_is_done_default():
 
 @pytest.mark.django_db
 def test_template_str_representation():
-    user = User.objects.create(username="testuser")
+    user = UserFactory()
     template = Template.objects.create(
         title_text="Test Template Representation",
         created_on=datetime.now(),
@@ -230,10 +250,12 @@ def test_template_str_representation():
 
 @pytest.mark.django_db
 def test_shared_users_str_representation():
+    user = UserFactory()
     todo_list = List.objects.create(
         title_text="Another Shared List",
         created_on=datetime.now(),
-        updated_on=datetime.now()
+        updated_on=datetime.now(),
+        user_id=user
     )
     shared_user = SharedUsers.objects.create(
         list_id=todo_list,
