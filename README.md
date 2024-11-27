@@ -3,18 +3,18 @@
 </p>
 <h2 align="center">The Only Todo List You Need</h2>
 
-[![Build Status](https://github.com/Software-Engineering-Project-PKHSAK/To-Done/actions/workflows/django.yml/badge.svg)](https://github.com/Software-Engineering-Project-PKHSAK/To-Done/actions/workflows/django.yml)
-[![Unittests](https://img.shields.io/github/actions/workflow/status/Software-Engineering-Project-PKHSAK/To-Done/unit_tests.yml?label=tests)](https://github.com/Software-Engineering-Project-PKHSAK/To-Done/actions/workflows/unit_tests.yml)
-[![Coverage Status](https://coveralls.io/repos/github/Software-Engineering-Project-PKHSAK/To-Done/badge.svg?branch=main)](https://coveralls.io/github/Software-Engineering-Project-PKHSAK/To-Done?branch=main)
+
+[![Build Status](https://github.com/Software-Engineering-Project-PKHSAK/To-Done/actions/workflows/django.yml/badge.svg)](https://github.com/CSC510SEFall24/To-Done/actions/workflows/django.yml)
+[![Unittests](https://img.shields.io/github/actions/workflow/status/Software-Engineering-Project-PKHSAK/To-Done/unit_tests.yml?label=tests)](https://github.com/CSC510SEFall24/To-Done/actions/workflows/unit_tests.yml)
 [![license badge](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/Software-Engineering-Project-PKHSAK/To-Done/blob/main/LICENSE)
-[![issues badge](https://img.shields.io/github/issues/Software-Engineering-Project-PKHSAK/To-Done)](https://github.com/Software-Engineering-Project-PKHSAK/To-Done/issues)
+[![issues badge](https://img.shields.io/github/issues/Software-Engineering-Project-PKHSAK/To-Done)](https://github.com/orgs/CSC510SEFall24/projects/2)
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![Django 4.1](https://img.shields.io/badge/django-4.1-blue.svg)](https://docs.djangoproject.com/en/4.1/releases/4.1/)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14015350.svg)](https://doi.org/10.5281/zenodo.14015350)
-[![Autopep8](https://img.shields.io/badge/formatter-autopep8-red?link=https%3A%2F%2Fgithub.com%2FSoftware-Engineering-Project-PKHSAK%2FTo-Done%2Factions%2Fworkflows%2Fautopep8.yml)](https://github.com/Software-Engineering-Project-PKHSAK/To-Done/actions/workflows/autopep8.yml)
-[![Pyflakes](https://img.shields.io/badge/syntax_check-pyflakes-%2333c461?link=https%3A%2F%2Fgithub.com%2FSoftware-Engineering-Project-PKHSAK%2FTo-Done%2Factions%2Fworkflows%2Fpyflakes.yml)](https://github.com/Software-Engineering-Project-PKHSAK/To-Done/actions/workflows/pyflakes.yml)
-[![linting: pylint](https://img.shields.io/badge/linting-pylint-green)](https://github.com/Software-Engineering-Project-PKHSAK/To-Done/actions/workflows/pylint.yml)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=Software-Engineering-Project-PKHSAK_To-Done&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=Software-Engineering-Project-PKHSAK_To-Done)
+[![Autopep8](https://img.shields.io/badge/formatter-autopep8-red?link=https%3A%2F%2Fgithub.com%2FSoftware-Engineering-Project-PKHSAK%2FTo-Done%2Factions%2Fworkflows%2Fautopep8.yml)](https://github.com/CSC510SEFall24/To-Done/actions/workflows/autopep8.yml)
+[![Pyflakes](https://img.shields.io/badge/syntax_check-pyflakes-%2333c461?link=https%3A%2F%2Fgithub.com%2FSoftware-Engineering-Project-PKHSAK%2FTo-Done%2Factions%2Fworkflows%2Fpyflakes.yml)](https://github.com/CSC510SEFall24/To-Done/actions/workflows/pyflakes.yml)
+[![linting: pylint](https://img.shields.io/badge/linting-pylint-green)](https://github.com/CSC510SEFall24/To-Done/actions/workflows/pylint.yml)
+
+
 
 
 # TO-DONE
@@ -216,11 +216,6 @@ Our project is currently not funded, and we operate on a volunteer and open-sour
 
 3) ### Customizable Dashboards
     Allow users to customize their dashboard layout and displayed information.
-
-### Want to Contribute?
-
-Want to contribute to this project? Learn about [Contributing](CONTRIBUTING.md). Not sure where to start? Have a look at 
-the [good first issue](https://github.com/shahleon/smart-todo/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22). 
 
 ### Need help?
 
