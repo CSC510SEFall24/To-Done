@@ -92,10 +92,11 @@ We wanted to work on something that is:
  * Add Tags To Todo Lists For Customizable Grouping
 
 ### New Key Features
- * Priority Setting 
- * Decription Update for individual tasks
- * Task editing/modification
- * Individual tagging for tasks not only entire to-do lists
+ * Editing and Deletion
+ * Priority Levels
+ * Notes and Tags
+ * Filtering
+ * UI Overhaul
 
 ### Quick Start
 
@@ -132,11 +133,50 @@ We wanted to work on something that is:
 
 Our project at the moment is not funded by any organization/individual.
 
+# Our Improvements 
+
+**Editing and Deletion:**
+The software in its’ original state did not allow for editing or
+deleting created tasks which would not allow the user to
+reschedule or reprioritize. These functionalities have been added
+to the code
+**Priority Levels:**
+Each task now has a priority level assigned to it for users’ easy
+prioritization
+**Notes and Tags:**
+The software now allows a user to attribute certain notes with a
+task. This allows users to add additional bits of context to their
+work. Moreover, there is also an added feature to add tags to a
+task for easier categorization
+**Filtering:**
+The system now includes a way to filter out tasks based on criteria
+like due date, as well as the newly introduced priority levels and
+tags for easier prioritization and more granular control
+**UI Overhaul:**
+The system has moved from a dated, ancient UI to a much more
+modern user interface that uses card-based displays to
+emphasize task content and improve usability and accessibility
 
 # Future Scope
 
-3) ### Customizable Dashboards
-    Allow users to customize their dashboard layout and displayed information.
+**Recurring Tasks:**
+Additional functionality could be added for recurring tasks that
+could be configured for daily, weekly and monthly frequencies
+
+**Calendar Integration:**
+Can be integrated with a third party calendar like Google,
+Microsoft or Notion so as to let the user schedule these tasks with
+own personal work and/or professional work
+
+**Task prioritization recommendations:**
+One can add a feature to personalize task prioritization according
+to due dates, priority levels and being able to club certain tasks
+together
+
+**Miscellaneous Productivity Add-ons:**
+The system could also be improved to measure and enhance
+productivity using strategies like pomodoro timers, email
+reminders, progress statistics and charts
 
 ### Want to Contribute?
 
