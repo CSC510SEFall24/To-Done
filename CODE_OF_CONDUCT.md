@@ -1,6 +1,4 @@
-# Writing the Code of Conduct to a .md file
 
-code_of_conduct_content = """
 # **Project Code of Conduct**
 
 ## **Purpose**
@@ -40,11 +38,4 @@ If you witness or are subject to unacceptable behavior, please report it promptl
 
 ## **Attribution**
 This Code of Conduct is adapted from the [Contributor Covenant](https://www.contributor-covenant.org/), version 2.1.
-"""
 
-file_path = "/mnt/data/CODE_OF_CONDUCT.md"
-
-with open(file_path, "w") as file:
-    file.write(code_of_conduct_content)
-
-file_path
