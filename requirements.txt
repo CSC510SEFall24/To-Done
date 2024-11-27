@@ -7,7 +7,7 @@ coverage==6.3.2
 coveralls==1.7.0
 Django==4.2.16
 django-appconf==1.0.6
-django-browser-reload==1.17.0
+django-browser-reload==1.15.0
 django-compressor==4.5.1
 django-crispy-forms==1.14.0
 django-tailwind==3.6.0
