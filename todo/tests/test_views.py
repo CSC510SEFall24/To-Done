@@ -162,3 +162,100 @@ def test_password_reset_request(create_user):
         "email": create_user.email
     })
     assert response.status_code in [200, 302]  # Redirect to done after reset
+
+
+@pytest.mark.django_db
+def test_get_all_tags(authenticated_client, create_list):
+  # Create tasks with tags
+  ListItem.objects.create(
+    list=create_list, item_name="Task 1", tags=["urgent", "work"], created_on=now()
+  )
+  ListItem.objects.create(
+    list=create_list, item_name="Task 2", tags=["personal"], created_on=now()
+  )
+  response = authenticated_client.get(reverse("todo:get_tags"))
+
+  assert response.status_code == 200
+  assert response.json() == ["urgent", "work", "personal"]
+
+
+@pytest.mark.django_db
+def test_get_tags_empty(authenticated_client):
+  response = authenticated_client.get(reverse("todo:get_tags"))
+
+  assert response.status_code == 200
+  assert response.json() == []
+
+
+@pytest.mark.django_db
+def test_get_tags_deduplication(authenticated_client, create_list):
+  ListItem.objects.create(
+    list=create_list, item_name="Task 1", tags=["urgent", "work"], created_on=now()
+  )
+  ListItem.objects.create(
+    list=create_list, item_name="Task 2", tags=["urgent", "personal"], created_on=now()
+  )
+  response = authenticated_client.get(reverse("todo:get_tags"))
+
+  assert response.status_code == 200
+  assert set(response.json()) == {"urgent", "work", "personal"}
+
+
+@pytest.mark.django_db
+def test_filter_tasks_by_tag(authenticated_client, create_list):
+  task_urgent = ListItem.objects.create(
+    list=create_list, item_name="Urgent Task", tags=["urgent"], created_on=now()
+  )
+  ListItem.objects.create(
+    list=create_list, item_name="Non-Urgent Task", tags=["non-urgent"], created_on=now()
+  )
+
+  response = authenticated_client.get(reverse("todo:filter_lists") + "?tags=urgent")
+
+  assert response.status_code == 200
+  assert len(response.context["latest_list_items"]) == 1
+  assert response.context["latest_list_items"][0].id == task_urgent.id
+
+
+@pytest.mark.django_db
+def test_add_tags_to_task(authenticated_client, create_list):
+  task = ListItem.objects.create(
+    list=create_list, item_name="Taggable Task", tags=[], created_on=now()
+  )
+  response = authenticated_client.post(reverse("todo:updateListItem", args=[task.id]), {
+    "tags": ["new-tag", "important"]
+  }, content_type="application/json")
+
+  assert response.status_code == 200
+  task.refresh_from_db()
+  assert set(task.tags) == {"new-tag", "important"}
+
+
+@pytest.mark.django_db
+def test_remove_tags_from_task(authenticated_client, create_list):
+  task = ListItem.objects.create(
+    list=create_list, item_name="Taggable Task", tags=["old-tag", "to-remove"], created_on=now()
+  )
+  response = authenticated_client.post(reverse("todo:updateListItem", args=[task.id]), {
+    "tags": ["old-tag"]
+  }, content_type="application/json")
+
+  assert response.status_code == 200
+  task.refresh_from_db()
+  assert set(task.tags) == {"old-tag"}
+
+
+@pytest.mark.django_db
+def test_invalid_tags_format(authenticated_client, create_list):
+  task = ListItem.objects.create(
+    list=create_list, item_name="Invalid Tags Task", tags=[], created_on=now()
+  )
+  response = authenticated_client.post(reverse("todo:updateListItem", args=[task.id]), {
+    "tags": "not-a-list"
+  }, content_type="application/json")
+
+  assert response.status_code == 400  # Bad Request
+  task.refresh_from_db()
+  assert task.tags == []
+
+  
