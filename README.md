@@ -224,7 +224,7 @@ the [good first issue](https://github.com/shahleon/smart-todo/issues?q=is%3Aissu
 
 ### Need help?
 
-Found a bug, have a new feature idea or need help with running or deploying the software? Please create an [Issue](https://github.com/Software-Engineering-Project-PKHSAK/To-Done/issues) to notify us.
+Found a bug, have a new feature idea or need help with running or deploying the software? Please create an [Issue](https://github.com/CSC510SEFall24/To-Done/issues) to notify us.
 
 ### License
 
@@ -234,16 +234,15 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 <table>
   <tr>
-    <td align="center"><a href="https://github.com/akarsh16reddy"><img src="https://avatars.githubusercontent.com/u/63505953?v=4" width="100px;" alt=""/><br /><sub><b>Akarsh Reddy, Eathamukkala</b></sub></a></td>
-    <td align="center"><a href="https://github.com/PrateekKamath"><img src="https://avatars.githubusercontent.com/u/92785050?v=4" width="100px;" alt=""/><br /><sub><b>Prateek Kamath</b></sub></a><br /></td>
-    <td align="center"><a href="https://github.com/123standup"><img src="https://avatars.githubusercontent.com/u/24963056?v=4" width="100px;" alt=""/><br /><sub><b>Himanshu Singh</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/vyompatel77"><img src="https://avatars.githubusercontent.com/u/104128972?s=400&v=4" width="100px;" alt=""/><br /><sub><b>Vyom Patel</b></sub></a></td>
+    <td align="center"><a href="https://github.com/rarchitgupta"><img src="https://avatars.githubusercontent.com/u/52240360?v=4" width="100px;" alt=""/><br /><sub><b>Archit Gupta</b></sub></a><br /></td>
+    <td align="center"><a href="https://github.com/Bhavishya-T"><img src="https://avatars.githubusercontent.com/u/46670627?v=4" width="100px;" alt=""/><br /><sub><b>Bhavishya Tarun</b></sub></a><br /></td>
   </tr>
 </table>
 
 ### Developers (Last Version)
 
-* Chiu, Ching-Lun (https://github.com/juliachiu1)
-* Yu, Hsueh-Yang (https://github.com/Hsueh-YANG)
-* Lin, Po-Hsun (https://github.com/123standup)
-* Ku, Li-Ling (https://github.com/Chloe-Ku)
-* Chiang, Chen-Hsuan (https://github.com/jackson910210)
+* Akarsh Reddy (https://github.com/akarsh16reddy)
+* Prateek Kamath (https://github.com/PrateekKamath)
+* Himanshu Singh (https://github.com/123standup)
+
