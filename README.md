@@ -37,19 +37,16 @@ To-Done is designed with simplicity and functionality in mind, catering to users
 
 **Empower your productivity and achieve more with To-Done Web Application—because your tasks deserve to be done, not just planned.**
 
-### Repo video - TO-DONE 3.0 - Fall 2024 [Watch the video](img/todone-promo.mp4)
+### Videos
 
-https://drive.google.com/file/d/1lL37jl0X8ancEcHooGaRaZOkh_R0i1CX/view?usp=drive_link
-
-
-### Watch this video to know more about TO-DONE 3.0
+https://github.com/user-attachments/assets/fd124d2e-3efe-4903-b56d-f55147c7d126
 
 
-https://user-images.githubusercontent.com/23623764/205810552-556e0449-3f81-4e55-ad9a-414de9731b15.mp4
+https://github.com/user-attachments/assets/3f020903-c46e-408e-866e-7f41d50666be
 
 
-### Watch this video to know more about the original TO-DONE 
-<img src="img/todone-create-list.gif" width="1200" height="500" />
+
+
 
 ### Target Audience
 To-Done is ideal for:
