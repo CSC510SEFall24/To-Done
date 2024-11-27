@@ -36,14 +36,12 @@ To-Done is designed with simplicity and functionality in mind, catering to users
 
 **Empower your productivity and achieve more with To-Done Web Application—because your tasks deserve to be done, not just planned.**
 
-### Ready to conquer your to-do list? With To-Done, focus on what matters and streamline your workflow. Dive in today and experience how easy task management can be!
-
 ### Repo video - TO-DONE 3.0 - Fall 2024 [Watch the video](img/todone-promo.mp4)
 
 https://drive.google.com/file/d/1lL37jl0X8ancEcHooGaRaZOkh_R0i1CX/view?usp=drive_link
 
 
-### Watch this video to know more about TO-DONE 2.0
+### Watch this video to know more about TO-DONE 3.0
 
 
 https://user-images.githubusercontent.com/23623764/205810552-556e0449-3f81-4e55-ad9a-414de9731b15.mp4
@@ -83,31 +81,23 @@ We wanted to work on something that is:
 `to-done` is a todo list app that is actually useful, very easy to create a basic working version with where a ton of new features can be added, touches upon all the aspects of web programming, database, working in a team etc.
 
 ### Features 
- * [Register](#register)
- * [Login](#login-forget-password)
- * [Create, Update, Delete Todo Lists](#manage-todo-list)
- * [Quickly Create Todo Lists From Existing Templates](#templates)
- * [Create Your Own Templates](#templates)
+ * Register
+ * Login
+ * Create, Update, Delete Todo Lists
+ * Quickly Create Todo Lists From Existing Templates
+ * Create Your Own Templates
  
 ### Features (Last Version)
- * [Shared List](#shared-todo-lists)
- * [Add Due Date To Tasks](#due-date-color-tags)
- * [Due Date Alerting Mechanism](#due-date-color-tags)
- * [Add Reminder Message to task completed](#due-date-color-tags)
- * [Customized Color Tag](#due-date-color-tags)
- * [Add Tags To Todo Lists For Customizable Grouping](#customizable-grouping-tags)
+ * Shared List
+ * Add Due Date To Tasks
+ * Dark Mode
+ * Add Tags To Todo Lists For Customizable Grouping
 
 ### New Key Features
- * [Social login - Google Sign-in](#social-login-google-sign-in) 
- * [Import/Export Todo Lists](#importexport-todo-lists)
- * [Dark Mode](#dark-mode)
-
-### Upcoming Features
- * Gamification - earn points by finishing your tasks, show-off your productivity in social media
- * Collaborative Task Management
- * Notification/Reminder Integration
- * Pomodoro Timer Integration
- * [List of All Planned Features for Second Phase](https://github.com/users/shahleon/projects/2/views/6)
+ * Priority Setting 
+ * Decription Update for individual tasks
+ * Task editing/modification
+ * Individual tagging for tasks not only entire to-do lists
 
 ### Quick Start
 
@@ -117,112 +107,40 @@ We wanted to work on something that is:
 * [Refer to this page](https://software-engineering-project-pkhsak.github.io/To-Done/views.html) for exhaustive documentation
 
 
-### Features
+### APP AFTER ADDING NEW FEATURES 
 
 #### Register
 <p float="middle">
-    <img src="img/todone-register.gif" width="500" height="250" />
+    <img src="img/register.png" width="500" height="250" />
 </p>
 
-#### Login, Forget Password
+#### Login
 <p float="middle">
-    <img src="img/todone-login.gif" width="500" height="250" /> 
+    <img src="img/login.png" width="500" height="250" /> 
 </p>
 
-#### Manage Todo List
+#### HomePage
 <p float="middle">
-    <img src="img/todone-create-list.gif" width="500" height="250" />
+    <img src="img/Homepage.png" width="500" height="250" />
     <br>
     <br>
     <img src="img/todone-update-list.gif" width="500" height="250" />
-</p>
-
-#### Templates
-<p float="middle">
-    <img src="img/todone-templates.gif" width="500" height="250" />
-</p>
 
 #### Customizable Grouping Tags
 <p float="middle">
     <img src="img/todone-tag-list.gif" width="500" height="250" />
-</p>
 
-#### Shared ToDo Lists
+#### Due Date, Priority Tag
 <p float="middle">
-    <img src="img/todone-shared-list.gif" width="500" height="250" />
-</p>
-
-#### Due Date, Color Tags
-<p float="middle">
-    <img src="img/todone-tag-color.gif" width="500" height="250" />
-</p>
-
-### New Features
-
-#### Social Login: Google Sign-in
-<p float="middle">
-    <img src="img/todone-google-sign-in.gif" width="500" height="250">
-</p>
-
-#### Import/Export Todo Lists
-
-##### Import
-
-<p float="middle">
-    <img src="img/todo-import.gif" width="500" height="250">
-</p>
-
-##### Export
-
-<p float="middle">
-    <img src="img/todo-export.gif" width="500" height="250">
-</p>
-
-#### Dark Mode
-
-<p float="middle">
-    <img src="img/todone-dark-mode.gif" width="500" height="250">
+    <img src="img/PriorityDuedate.png" width="500" height="250" />
 </p>
 
 # Project Funding
 
-Our project is currently not funded, and we operate on a volunteer and open-source basis, and currently, improvement of the project solely relies on the dedication of our team and contributions from the open-source community.
+Our project at the moment is not funded by any organization/individual.
 
 
 # Future Scope
-
-## 3 month Tasks
-1) ### Task Creation and Management:
-   Enhance the task creation interface with fields for due dates and priority levels.
-   Implementing basic task editing and deletion functionalities.
-
-2) ### User Interface Improvements:
-   Conduct user testing to gather feedback on the current UI.
-   Make initial UI improvements based on user feedback.
-
-3) ### Basic Notifications:
-   Implement email notifications for task deadlines.
-
-## 6 month Tasks
-1) ### Collaboration Features
-   Develop shared tasks functionality to allow users to collaborate on projects.
-   Implement a commenting system for tasks.
-
-2) ### Task Prioritization and Categorization
-   Introduce tagging and categorization for tasks.
-   Implement priority levels for tasks.
-
-3) ### Enhanced User Interface
-    Implement responsive design for mobile compatibility.
-    Introduce a dark mode option.
-
-## 12 month Tasks
-1) ### Mobile Application Development
-    Develop and launch a mobile application for iOS and Android.
-
-2) ### Advanced Search and Filtering
-    Implement a robust search feature for tasks.
-    Develop filtering options based on date, priority, and category.
 
 3) ### Customizable Dashboards
     Allow users to customize their dashboard layout and displayed information.
@@ -234,7 +152,7 @@ the [good first issue](https://github.com/shahleon/smart-todo/issues?q=is%3Aissu
 
 ### Need help?
 
-Found a bug, have a new feature idea or need help with running or deploying the software? Please create an [Issue](https://github.com/Software-Engineering-Project-PKHSAK/To-Done/issues) to notify us.
+Found a glitch or an erorr, have a new feature ideas or need help with deploying the web-app? You can raise an issue [Issue](https://github.com/CSC510SEFall24/To-Done/issues) to notify us.
 
 ### License
 
