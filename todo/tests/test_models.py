@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from todo.models import List, ListTags, ListItem, Template, TemplateItem, SharedUsers, SharedList
 from datetime import datetime, date
 
+
 @pytest.mark.django_db
 def test_list_creation():
     user = User.objects.create(username="testuser")
@@ -14,6 +15,7 @@ def test_list_creation():
     )
     assert str(todo_list) == "Test List"
 
+
 @pytest.mark.django_db
 def test_list_tags_creation():
     user = User.objects.create(username="testuser")
@@ -23,6 +25,7 @@ def test_list_tags_creation():
         created_on=datetime.now()
     )
     assert str(tag) == "Important"
+
 
 @pytest.mark.django_db
 def test_list_item_creation():
@@ -44,6 +47,7 @@ def test_list_item_creation():
     )
     assert str(item) == "Description of the test item: False"
 
+
 @pytest.mark.django_db
 def test_template_creation():
     user = User.objects.create(username="testuser")
@@ -54,6 +58,7 @@ def test_template_creation():
         user_id=user
     )
     assert str(template) == "Test Template"
+
 
 @pytest.mark.django_db
 def test_template_item_creation():
@@ -74,6 +79,7 @@ def test_template_item_creation():
     )
     assert str(item) == "Template Item"
 
+
 @pytest.mark.django_db
 def test_shared_users_creation():
     todo_list = List.objects.create(
@@ -87,6 +93,7 @@ def test_shared_users_creation():
     )
     assert str(shared_user) == str(todo_list.id)
 
+
 @pytest.mark.django_db
 def test_shared_list_creation():
     user = User.objects.create(username="testuser")
@@ -96,6 +103,7 @@ def test_shared_list_creation():
     )
     assert str(shared_list) == str(user)
 
+
 @pytest.mark.django_db
 def test_list_default_tag():
     todo_list = List.objects.create(
@@ -104,6 +112,7 @@ def test_list_default_tag():
         updated_on=datetime.now()
     )
     assert todo_list.list_tag == "none"
+
 
 @pytest.mark.django_db
 def test_list_item_priority_choices():
@@ -122,6 +131,7 @@ def test_list_item_priority_choices():
         priority="HIGH"
     )
     assert item.priority == "HIGH"
+
 
 @pytest.mark.django_db
 def test_template_item_tag_color():
@@ -142,6 +152,7 @@ def test_template_item_tag_color():
     )
     assert item.tag_color == "#123ABC"
 
+
 @pytest.mark.django_db
 def test_list_item_tags_field():
     todo_list = List.objects.create(
@@ -160,6 +171,7 @@ def test_list_item_tags_field():
     )
     assert item.tags == ["urgent", "work"]
 
+
 @pytest.mark.django_db
 def test_list_is_shared_default():
     todo_list = List.objects.create(
@@ -169,6 +181,7 @@ def test_list_is_shared_default():
     )
     assert todo_list.is_shared is False
 
+
 @pytest.mark.django_db
 def test_list_tags_optional_fields():
     tag = ListTags.objects.create(
@@ -177,12 +190,14 @@ def test_list_tags_optional_fields():
     )
     assert tag.user_id is None
 
+
 @pytest.mark.django_db
 def test_shared_list_optional_user():
     shared_list = SharedList.objects.create(
         shared_list_id="12345"
     )
     assert shared_list.user is None
+
 
 @pytest.mark.django_db
 def test_list_item_is_done_default():
@@ -200,6 +215,7 @@ def test_list_item_is_done_default():
     )
     assert item.is_done is False
 
+
 @pytest.mark.django_db
 def test_template_str_representation():
     user = User.objects.create(username="testuser")
@@ -210,6 +226,7 @@ def test_template_str_representation():
         user_id=user
     )
     assert str(template) == "Test Template Representation"
+
 
 @pytest.mark.django_db
 def test_shared_users_str_representation():
@@ -224,6 +241,7 @@ def test_shared_users_str_representation():
     )
     assert str(shared_user) == str(todo_list.id)
 
+
 @pytest.mark.django_db
 def test_list_tags_str_representation():
     tag = ListTags.objects.create(
@@ -231,6 +249,7 @@ def test_list_tags_str_representation():
         created_on=datetime.now()
     )
     assert str(tag) == "Important Tag"
+
 
 @pytest.mark.django_db
 def test_list_with_no_user():
@@ -240,6 +259,7 @@ def test_list_with_no_user():
         updated_on=datetime.now()
     )
     assert todo_list.user_id is None
+
 
 @pytest.mark.django_db
 def test_shared_users_email_format():

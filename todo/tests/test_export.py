@@ -11,12 +11,12 @@ from todo.models import List, ListItem, Template, TemplateItem, ListTags, Shared
 # from django.contrib.messages import get_messages
 
 
-
 class ExportTodoTestCase(TestCase):
     def setUp(self):
         # Define the export URL using 'export_todo_csv' view name
         # Create and log in a test user
-        user = User.objects.create_user(username='testuserdiff', password='1234567')
+        user = User.objects.create_user(
+            username='testuserdiff', password='1234567')
         self.client.login(username='testuserdiff', password='1234567')
         self.export_url = reverse('todo:export_todo_csv')
 
@@ -48,12 +48,14 @@ class ExportTodoTestCase(TestCase):
     def test_export_url_redirects_if_not_logged_in(self):
         """Test if the export URL redirects for unauthenticated users (if export requires login)."""
         response = self.client.get(self.export_url)
-        self.assertIn(response.status_code, [200, 302])  # Change to 302 if login is required
+        # Change to 302 if login is required
+        self.assertIn(response.status_code, [200, 302])
 
     def test_export_url_accessible_to_logged_in_user(self):
         """Test if the export URL is accessible to a logged-in user."""
         # Assuming login required, create a test user and log in
-        user = User.objects.create_user(username='testuser', password='1234567')
+        user = User.objects.create_user(
+            username='testuser', password='1234567')
         self.client.login(username='testuserdiff', password='1234567')
         response = self.client.get(self.export_url)
         self.assertEqual(response.status_code, 200)
@@ -89,4 +91,3 @@ class ExportTodoTestCase(TestCase):
         """Test that the export function returns a 200 status code when accessed."""
         response = self.client.get(self.export_url)
         self.assertEqual(response.status_code, 200)
-    

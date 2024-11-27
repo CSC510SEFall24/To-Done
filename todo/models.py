@@ -57,7 +57,7 @@ class ListItem(models.Model):
         ('MEDIUM', 'Medium'),
         ('LOW', 'Low'),
     ]
-    
+
     # the name of a list item
     item_name = models.CharField(max_length=50, null=True, blank=True)
     # the text note of a list item

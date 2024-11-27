@@ -62,7 +62,7 @@ from .models import List, ListItem
 # from django.http import HttpResponseRedirect
 # from django.urls import reverse
 # from .models import List, ListItem
-# from django.contrib import messages 
+# from django.contrib import messages
 from dateutil import parser
 
 config = {
@@ -81,10 +81,10 @@ def config_hook(request, template_str):
     if config["darkMode"]:
         config["primary_color"] = '#000000'
         config["hover_color"] = '#cccccc'
-        config["background_color"]= "#171515"
-        config["text_color"]= "#ffffff"
+        config["background_color"] = "#171515"
+        config["text_color"] = "#ffffff"
         config["side_nav"] = "#373535"
-        config["header_color"]= "#ffffff"
+        config["header_color"] = "#ffffff"
 
     else:
         config["primary_color"] = '#0fa662'
@@ -92,7 +92,7 @@ def config_hook(request, template_str):
         config["background_color"] = "#ffffff"
         config["text_color"] = "#000000"
         config["side_nav"] = "#ddd"
-        config["header_color"]= "#0fa662"
+        config["header_color"] = "#0fa662"
 
     return redirect('todo:' + template_str)
 
@@ -111,11 +111,13 @@ def index(request, list_id=None):
     if list_id:
         latest_lists = List.objects.filter(id=list_id)
     else:
-        latest_lists = List.objects.filter(user_id_id=request.user.id).order_by('-updated_on')
+        latest_lists = List.objects.filter(
+            user_id_id=request.user.id).order_by('-updated_on')
 
     shared_list = []
     try:
-        query_list_str = SharedList.objects.get(user_id=request.user.id).shared_list_id
+        query_list_str = SharedList.objects.get(
+            user_id=request.user.id).shared_list_id
         if query_list_str:
             shared_list_id = query_list_str.split(" ")
             shared_list_id.remove("")
@@ -157,8 +159,10 @@ def index(request, list_id=None):
                 item.color = "#000000"
 
     # Get templates and tags
-    saved_templates = Template.objects.filter(user_id_id=request.user.id).order_by('created_on')
-    list_tags = ListTags.objects.filter(user_id=request.user.id).order_by('created_on')
+    saved_templates = Template.objects.filter(
+        user_id_id=request.user.id).order_by('created_on')
+    list_tags = ListTags.objects.filter(
+        user_id=request.user.id).order_by('created_on')
 
     context = {
         "latest_lists": latest_lists,
@@ -363,11 +367,11 @@ def removeListItem(request):
 def updateListItem(request, item_id):
     """
     Update a list item's details including title, note, due date, and completion status.
-    
+
     Args:
         request: The HTTP request object
         item_id: The ID of the list item to update
-        
+
     Returns:
         JsonResponse: Contains the updated item details if successful, or error message if failed
     """
@@ -375,8 +379,7 @@ def updateListItem(request, item_id):
         try:
             body = json.loads(request.body)
             list_item = ListItem.objects.get(id=item_id)
-            
-            
+
             # Update fields if they are provided in the request
             if 'title' in body:
                 list_item.item_name = body['title']
@@ -386,7 +389,8 @@ def updateListItem(request, item_id):
                 try:
                     if body['due_date']:
                         # Parse the date and set it to midnight in the current timezone
-                        date_only = datetime.datetime.strptime(body['due_date'], '%Y-%m-%d')
+                        date_only = datetime.datetime.strptime(
+                            body['due_date'], '%Y-%m-%d')
                         list_item.due_date = date_only.date()  # Only store the date part
                     else:
                         # If no due date is provided, set it to a far future date
@@ -399,17 +403,18 @@ def updateListItem(request, item_id):
                     list_item.finished_on = datetime.datetime.now()  # Use naive datetime
                 else:
                     # If task is not done, set finished_on to a far future date
-                    list_item.finished_on = datetime.datetime(2099, 12, 31)  # Use naive datetime
+                    list_item.finished_on = datetime.datetime(
+                        2099, 12, 31)  # Use naive datetime
             if 'priority' in body:
                 if body['priority'] in ['HIGH', 'MEDIUM', 'LOW']:
                     list_item.priority = body['priority']
                 else:
                     return JsonResponse({'error': 'Invalid priority level'}, status=400)
-            
+
             # Ensure tag_color has a value
             if not list_item.tag_color:
                 list_item.tag_color = '#000000'  # Default to black
-            
+
             list_item.save()
             # Return the updated item details
             return JsonResponse({
@@ -422,14 +427,14 @@ def updateListItem(request, item_id):
                 'created_on': list_item.created_on.isoformat(),
                 'priority': list_item.priority
             })
-            
+
         except json.JSONDecodeError:
             return JsonResponse({'error': 'Invalid JSON data'}, status=400)
         except ListItem.DoesNotExist:
             return JsonResponse({'error': 'List item not found'}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
-    
+
     return JsonResponse({'error': 'Only POST method is allowed'}, status=405)
 
 
@@ -457,17 +462,20 @@ def addNewListItem(request):
         body = json.loads(body_unicode)
         list_id = body['list_id']
         item_name = body['list_item_name']
-        item_text = body.get('item_text', '')  # Get note text, default to empty string
+        # Get note text, default to empty string
+        item_text = body.get('item_text', '')
         create_on_time = datetime.datetime.now()
         finished_on_time = create_on_time
         due_date = body['due_date']
-        priority = body.get('priority', 'MEDIUM')  # Default to MEDIUM if not provided
+        # Default to MEDIUM if not provided
+        priority = body.get('priority', 'MEDIUM')
         tags = []
-        
+
         # Process tags if provided
         if 'tags' in body and body['tags']:
             # Split by comma and strip whitespace
-            tags = [tag.strip() for tag in body['tags'].split(',') if tag.strip()]
+            tags = [tag.strip()
+                    for tag in body['tags'].split(',') if tag.strip()]
 
         # Debug print statements
         print("Received data:")
@@ -488,12 +496,12 @@ def addNewListItem(request):
         try:
             with transaction.atomic():
                 todo_list_item = ListItem(
-                    item_name=item_name, 
+                    item_name=item_name,
                     item_text=item_text,
-                    created_on=create_on_time, 
+                    created_on=create_on_time,
                     finished_on=finished_on_time,
-                    due_date=due_date, 
-                    list_id=list_id, 
+                    due_date=due_date,
+                    list_id=list_id,
                     is_done=False,
                     priority=priority,
                     tags=tags  # Add tags to the item
@@ -521,13 +529,13 @@ def markListItem(request):
             body = json.loads(request.body)
             list_item_id = body['list_item_id']
             is_done = body['is_done']
-            
+
             with transaction.atomic():
                 list_item = ListItem.objects.get(id=list_item_id)
                 list_item.is_done = is_done
                 list_item.finish_on = datetime.datetime.now() if is_done else None
                 list_item.save()
-            
+
             return JsonResponse({
                 'success': True,
                 'is_done': list_item.is_done,
@@ -648,12 +656,12 @@ def getListItemById(request):
         body_unicode = request.body.decode('utf-8')
         body = json.loads(body_unicode)
         list_item_id = body['list_item_id']
-        
+
         try:
             with transaction.atomic():
                 item = ListItem.objects.get(id=list_item_id)
                 todo_list = List.objects.get(id=item.list_id)
-                
+
                 return JsonResponse({
                     'item_id': item.id,
                     'item_name': item.item_name,
@@ -963,7 +971,7 @@ def password_reset_request(request):
     return render(request=request, template_name="todo/password/password_reset.html", context={"password_reset_form": password_reset_form, "config": config})
 
 
-# Export todo 
+# Export todo
 
 def export_todo_csv(request):
     # Create the HttpResponse object with CSV headers.
@@ -972,7 +980,8 @@ def export_todo_csv(request):
 
     # Create a CSV writer object
     writer = csv.writer(response)
-    writer.writerow(['List Title', 'Item Name', 'Item Text', 'Is Done', 'Created On', 'Due Date'])
+    writer.writerow(['List Title', 'Item Name', 'Item Text',
+                    'Is Done', 'Created On', 'Due Date'])
 
     # Fetch data to export
     todo_lists = List.objects.filter(user_id=request.user)
@@ -998,7 +1007,7 @@ def export_todo_csv(request):
 # from django.http import HttpResponseRedirect
 # from django.urls import reverse
 # from .models import List, ListItem
-# from django.contrib import messages 
+# from django.contrib import messages
 # from datetime import datetime
 
 def import_todo_csv(request):
@@ -1010,23 +1019,25 @@ def import_todo_csv(request):
         for row in reader:
             # Assuming CSV format matches [List Title, Item Name, Item Text, Is Done, Created On, Due Date]
             if len(row) < 6:  # Validate row length
-                messages.error(request, 'Invalid CSV format. Please check your file.')
+                messages.error(
+                    request, 'Invalid CSV format. Please check your file.')
                 return redirect(reverse('todo:import_todo_csv'))
 
             list_title, item_name, item_text, is_done, created_on, due_date = row
 
             # Get or create List by title
             # todo_list, created = List.objects.get_or_create(title_text=list_title)
-            todo_list, created = List.objects.get_or_create(title_text=list_title, defaults={'created_on': datetime.datetime.now(), 'updated_on': datetime.datetime.now()})
+            todo_list, created = List.objects.get_or_create(title_text=list_title, defaults={
+                                                            'created_on': datetime.datetime.now(), 'updated_on': datetime.datetime.now()})
 
             # Convert string values to proper types
             is_done = is_done.lower() in ['true', '1']
             # created_on = datetime.strptime(created_on, '%Y-%m-%d').date() if created_on else None
             # due_date = datetime.strptime(due_date, '%Y-%m-%d').date() if due_date else None
-            
+
             created_on = parser.isoparse(created_on)
             due_date = parser.isoparse(due_date) if due_date else None
-            
+
             # Create the ListItem
             ListItem.objects.create(
                 list=todo_list,
@@ -1041,7 +1052,7 @@ def import_todo_csv(request):
 
         messages.success(request, 'Todos imported successfully!')
         # return HttpResponseRedirect(reverse('todo:home'))
-    
+
     return redirect("todo:index")
 
     # return render(request, 'todo/import_csv.html')
@@ -1068,7 +1079,7 @@ def delete_template(request, template_id):
     if not request.user.is_authenticated:
         return redirect("/login")
     try:
-      template = Template.objects.get(id=template_id)
+        template = Template.objects.get(id=template_id)
     except Template.DoesNotExist:
         print("Template doesn't exist!")
     else:
@@ -1080,10 +1091,10 @@ def delete_template(request, template_id):
 def filter_lists(request):
     """
     Filter lists and their items based on due date and priority.
-    
+
     Args:
         request: The HTTP request object containing due_date and priority query parameters
-        
+
     Returns:
         HttpResponse: Renders the index page with filtered lists and items
     """
@@ -1093,12 +1104,14 @@ def filter_lists(request):
     due_date = request.GET.get('due_date')
     priority = request.GET.get('priority')
     tag = request.GET.get('tag')
-    
+
     # Get user's lists
-    latest_lists = List.objects.filter(user_id_id=request.user.id).order_by('-updated_on')
+    latest_lists = List.objects.filter(
+        user_id_id=request.user.id).order_by('-updated_on')
     shared_list = []
     try:
-        query_list_str = SharedList.objects.get(user_id=request.user.id).shared_list_id
+        query_list_str = SharedList.objects.get(
+            user_id=request.user.id).shared_list_id
         if query_list_str:
             shared_list_id = query_list_str.split(" ")
             shared_list_id.remove("")
@@ -1110,59 +1123,62 @@ def filter_lists(request):
                     continue
     except SharedList.DoesNotExist:
         pass
-    
+
     # Filter items based on criteria
     filtered_lists = []
     filtered_items_by_list = {}
     all_lists = list(latest_lists) + shared_list
-    
+
     for todo_list in all_lists:
         items = list(todo_list.listitem_set.all())
         matching_items = []
-        
+
         for item in items:
             matches = True
-            
+
             if priority:
                 if item.priority != priority:
                     matches = False
                     continue
-            
+
             if due_date and due_date.strip():
                 try:
-                    due_date_obj = datetime.datetime.strptime(due_date, '%Y-%m-%d').date()
+                    due_date_obj = datetime.datetime.strptime(
+                        due_date, '%Y-%m-%d').date()
                     if item.due_date > due_date_obj:
                         matches = False
                         continue
                 except ValueError:
                     pass
-            
+
             if tag and tag.strip():
                 if not item.tags or not isinstance(item.tags, list) or tag not in item.tags:
                     matches = False
                     continue
-            
+
             if matches:
                 matching_items.append(item)
-        
+
         if matching_items:
             filtered_lists.append(todo_list)
             filtered_items_by_list[todo_list.id] = matching_items
-    
+
     # Get templates and tags
-    saved_templates = Template.objects.filter(user_id_id=request.user.id).order_by('created_on')
-    list_tags = ListTags.objects.filter(user_id=request.user.id).order_by('created_on')
-    
+    saved_templates = Template.objects.filter(
+        user_id_id=request.user.id).order_by('created_on')
+    list_tags = ListTags.objects.filter(
+        user_id=request.user.id).order_by('created_on')
+
     # Apply due date coloring to matching items
     cur_date = datetime.date.today()
     for items in filtered_items_by_list.values():
         for item in items:
             item.color = "#FF0000" if cur_date > item.due_date else "#000000"
-    
+
     # Attach filtered items to their lists
     for todo_list in filtered_lists:
         todo_list.items = filtered_items_by_list.get(todo_list.id, [])
-    
+
     context = {
         'latest_lists': filtered_lists,
         'templates': saved_templates,
@@ -1176,43 +1192,46 @@ def filter_lists(request):
             'tag': tag if tag and tag.strip() else ''
         }
     }
-        
+
     return render(request, 'todo/index.html', context)
 
 
 def get_tags_from_all_tasks(request):
-  if not request.user.is_authenticated:
-    return redirect('/login')
+    if not request.user.is_authenticated:
+        return redirect('/login')
 
-  # Fetch the latest lists and shared lists
-  latest_lists = List.objects.filter(user_id_id=request.user.id).order_by('-updated_on')
-  shared_list = []
-  try:
-    query_list_str = SharedList.objects.get(user_id=request.user.id).shared_list_id
-    if query_list_str:
-      shared_list_id = query_list_str.split(" ")
-      shared_list_id.remove("")
-      for list_id in shared_list_id:
-        try:
-          query_list = List.objects.get(id=int(list_id))
-          shared_list.append(query_list)
-        except List.DoesNotExist:
-          continue
-  except SharedList.DoesNotExist:
-    pass
+    # Fetch the latest lists and shared lists
+    latest_lists = List.objects.filter(
+        user_id_id=request.user.id).order_by('-updated_on')
+    shared_list = []
+    try:
+        query_list_str = SharedList.objects.get(
+            user_id=request.user.id).shared_list_id
+        if query_list_str:
+            shared_list_id = query_list_str.split(" ")
+            shared_list_id.remove("")
+            for list_id in shared_list_id:
+                try:
+                    query_list = List.objects.get(id=int(list_id))
+                    shared_list.append(query_list)
+                except List.DoesNotExist:
+                    continue
+    except SharedList.DoesNotExist:
+        pass
 
-  all_lists = list(latest_lists) + shared_list
+    all_lists = list(latest_lists) + shared_list
 
-  # Collect tags from all tasks in these lists
-  all_tags = set()  # Use a set to avoid duplicates
-  for todo_list in all_lists:
-    tasks = todo_list.listitem_set.all()
-    for task in tasks:
-      if task.tags:
-        all_tags.update(task.tags)  # Assuming task.tags is a list/array of tags
+    # Collect tags from all tasks in these lists
+    all_tags = set()  # Use a set to avoid duplicates
+    for todo_list in all_lists:
+        tasks = todo_list.listitem_set.all()
+        for task in tasks:
+            if task.tags:
+                # Assuming task.tags is a list/array of tags
+                all_tags.update(task.tags)
 
-  # Convert the set to a list and sort
-  all_tags_list = sorted(list(all_tags))
+    # Convert the set to a list and sort
+    all_tags_list = sorted(list(all_tags))
 
-  # Return as JSON to the frontend
-  return JsonResponse({'tags': all_tags_list})
+    # Return as JSON to the frontend
+    return JsonResponse({'tags': all_tags_list})
