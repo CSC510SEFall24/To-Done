@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="img/todone-logo.png" />
+  <img src="img/Screenshot 2024-11-27 at 12.16.28 AM.png" />
 </p>
 <h2 align="center">The Only Todo List You Need</h2>
 
