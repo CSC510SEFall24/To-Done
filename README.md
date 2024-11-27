@@ -127,7 +127,7 @@ We wanted to work on something that is:
     
 #### Due Date, Priority Tag
 <p float="middle">
-    <img src="img/PriorityDuedate.png" width="1000" height="250" />
+    <img src="img/PriorityDuedate.png" width="1000" height="200" />
 </p>
 
 # Project Funding
