@@ -8,6 +8,7 @@
 [![Unittests](https://img.shields.io/github/actions/workflow/status/Software-Engineering-Project-PKHSAK/To-Done/unit_tests.yml?label=tests)](https://github.com/CSC510SEFall24/To-Done/actions/workflows/unit_tests.yml)
 [![license badge](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/Software-Engineering-Project-PKHSAK/To-Done/blob/main/LICENSE)
 [![issues badge](https://img.shields.io/github/issues/Software-Engineering-Project-PKHSAK/To-Done)](https://github.com/orgs/CSC510SEFall24/projects/2)
+[![Coverage Status](https://coveralls.io/repos/github/Software-Engineering-Project-PKHSAK/To-Done/badge.svg?branch=main)](https://app.codecov.io/github/codecov/gazebo)
 [![Python 3.8](https://img.shields.io/badge/python-3.8-blue.svg)](https://www.python.org/downloads/release/python-380/)
 [![Django 4.1](https://img.shields.io/badge/django-4.1-blue.svg)](https://docs.djangoproject.com/en/4.1/releases/4.1/)
 [![Autopep8](https://img.shields.io/badge/formatter-autopep8-red?link=https%3A%2F%2Fgithub.com%2FSoftware-Engineering-Project-PKHSAK%2FTo-Done%2Factions%2Fworkflows%2Fautopep8.yml)](https://github.com/CSC510SEFall24/To-Done/actions/workflows/autopep8.yml)
