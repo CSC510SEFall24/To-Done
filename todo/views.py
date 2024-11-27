@@ -1,24 +1,3 @@
-# MIT License
-
-# Copyright 2024 Akarsh Reddy Eathamukkala
-
-# Permission is hereby granted, free of charge, to any person obtaining a copy of
-# this software and associated documentation files (the “Software”), to deal in
-# the Software without restriction, including without limitation the rights to
-# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-# of the Software, and to permit persons to whom the Software is furnished to
-# do so, subject to the following conditions:
-
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-
-# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS
-# OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
-# IN THE SOFTWARE.
 
 import datetime
 import json
@@ -63,6 +42,7 @@ from .models import List, ListItem
 # from django.urls import reverse
 # from .models import List, ListItem
 # from django.contrib import messages
+
 from dateutil import parser
 
 config = {
@@ -227,23 +207,7 @@ def todo_from_template(request):
 
 # Create a new Template from existing to-do list and redirect to the templates list page
 def template_from_todo(request):
-    """
-    Creates a new template from a selected to-do list.
 
-    This view function is invoked when a user wants to create a new template based on an existing to-do list.
-    It first checks if the user is authenticated; if not, it redirects them to the login page. If the user
-    is authenticated, it fetches the specified to-do list, creates a new template with the to-do list's title,
-    and then populates the new template with items defined in the to-do list.
-
-    Args:
-        request: The HTTP request object containing the user's input data.
-
-    Returns:
-        HttpResponse: A redirect to the templates page after successfully creating the new template and its items.
-
-    Raises:
-        Http404: If the specified to-do list does not exist, a 404 error is raised.
-    """
     if not request.user.is_authenticated:
         return redirect("/login")
     todo_id = request.POST['todo']
