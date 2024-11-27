@@ -140,18 +140,22 @@ The software in its’ original state did not allow for editing or
 deleting created tasks which would not allow the user to
 reschedule or reprioritize. These functionalities have been added
 to the code
+
 **Priority Levels:**
 Each task now has a priority level assigned to it for users’ easy
 prioritization
+
 **Notes and Tags:**
 The software now allows a user to attribute certain notes with a
 task. This allows users to add additional bits of context to their
 work. Moreover, there is also an added feature to add tags to a
 task for easier categorization
+
 **Filtering:**
 The system now includes a way to filter out tasks based on criteria
 like due date, as well as the newly introduced priority levels and
 tags for easier prioritization and more granular control
+
 **UI Overhaul:**
 The system has moved from a dated, ancient UI to a much more
 modern user interface that uses card-based displays to
