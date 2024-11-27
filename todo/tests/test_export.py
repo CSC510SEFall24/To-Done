@@ -53,12 +53,15 @@ class ExportTodoTestCase(TestCase):
 
     def test_export_url_accessible_to_logged_in_user(self):
         """Test if the export URL is accessible to a logged-in user."""
-        # Assuming login required, create a test user and log in
+        # Use a unique username to avoid conflicts
+        unique_username = f"testuser_{timezone.now().timestamp()}"
         user = User.objects.create_user(
-            username='testuser', password='1234567')
-        self.client.login(username='testuserdiff', password='1234567')
+        username=unique_username, password="1234567"
+    )
+        self.client.login(username=unique_username, password="1234567")
         response = self.client.get(self.export_url)
         self.assertEqual(response.status_code, 200)
+
 
     def test_export_response_has_csv_extension_in_filename(self):
         """Test if the export response filename has the .csv extension."""
