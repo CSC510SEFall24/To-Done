@@ -124,15 +124,10 @@ We wanted to work on something that is:
     <img src="img/Homepage.png" width="500" height="250" />
     <br>
     <br>
-    <img src="img/todone-update-list.gif" width="500" height="250" />
-
-#### Customizable Grouping Tags
-<p float="middle">
-    <img src="img/todone-tag-list.gif" width="500" height="250" />
-
+    
 #### Due Date, Priority Tag
 <p float="middle">
-    <img src="img/PriorityDuedate.png" width="500" height="250" />
+    <img src="img/PriorityDuedate.png" width="1000" height="250" />
 </p>
 
 # Project Funding
