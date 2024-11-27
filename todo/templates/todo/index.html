@@ -99,7 +99,7 @@
             <!-- Main Content -->
             <div class="p-4">
                 <div class="mb-6">
-                    <h1 class="text-2xl font-semibold text-gray-900">Welcome, {{ user_name }}!</h1>
+                    <h1 class="text-2xl font-semibold text-gray-900">Welcome, {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}!</h1>
                 </div>
                 {% if latest_lists %}
                     {% for list in latest_lists %}
@@ -251,6 +251,14 @@
                                 <option value="HIGH" {% if current_filters.priority == 'HIGH' %}selected{% endif %}>High Priority</option>
                                 <option value="MEDIUM" {% if current_filters.priority == 'MEDIUM' %}selected{% endif %}>Medium Priority</option>
                                 <option value="LOW" {% if current_filters.priority == 'LOW' %}selected{% endif %}>Low Priority</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="tags_filter" class="block text-sm font-medium text-gray-700">Tag</label>
+                            <select id="tags_filter" name="tags_filter"
+                                    class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm">
+                                <option value="">All Tags</option>
+                                <!-- Tags will be populated via JavaScript -->
                             </select>
                         </div>
                         <div class="pt-4">
@@ -841,20 +849,25 @@
     });
 
     function applyFilters() {
-        const dueDate = document.getElementById('filter-due-date').value;
-        const priority = document.getElementById('filter-priority').value;
+        const dueDate = document.getElementById('due_date_filter').value;
+        const priority = document.getElementById('priority_filter').value;
+        const tagsSelect = document.getElementById('tags_filter');
+        const tag = tagsSelect.value;
         
-        // Build the URL with query parameters
         const params = new URLSearchParams();
-        if (dueDate) params.append('due_date', dueDate);
-        if (priority) params.append('priority', priority);
+        if (dueDate && dueDate.trim()) params.append('due_date', dueDate);
+        if (priority && priority.trim()) params.append('priority', priority);
+        if (tag && tag.trim()) params.append('tag', tag);
         
-        // Navigate to the filtered URL
-        window.location.href = `/todo?${params.toString()}`;
+        const finalUrl = '/todo/filter?' + params.toString();
+        window.location.href = finalUrl;
     }
 
     function clearFilters() {
-        window.location.href = '/todo';
+        document.getElementById('due_date_filter').value = '';
+        document.getElementById('priority_filter').value = '';
+        document.getElementById('tags_filter').value = '';
+        window.location.href = '/todo/filter';
     }
 
     // Set initial filter values from URL parameters
@@ -862,9 +875,41 @@
         const urlParams = new URLSearchParams(window.location.search);
         const dueDate = urlParams.get('due_date');
         const priority = urlParams.get('priority');
+        const tag = urlParams.get('tag');
         
-        if (dueDate) document.getElementById('filter-due-date').value = dueDate;
-        if (priority) document.getElementById('filter-priority').value = priority;
+        if (dueDate) document.getElementById('due_date_filter').value = dueDate;
+        if (priority) document.getElementById('priority_filter').value = priority;
+        if (tag) document.getElementById('tags_filter').value = tag;
+    });
+
+    // Function to fetch and populate tags
+    function populateTagsFilter() {
+        fetch('/todo/tags')
+            .then(response => response.json())
+            .then(data => {
+                const tagsFilter = document.getElementById('tags_filter');
+                tagsFilter.innerHTML = '<option value="">All Tags</option>';
+                
+                data.tags.forEach(tag => {
+                    const option = document.createElement('option');
+                    option.value = tag;
+                    option.textContent = tag;
+                    tagsFilter.appendChild(option);
+                });
+
+                // Set initial value from URL if present
+                const urlParams = new URLSearchParams(window.location.search);
+                const tag = urlParams.get('tag');
+                if (tag) {
+                    tagsFilter.value = tag;
+                }
+            })
+            .catch(error => console.error('Error fetching tags:', error));
+    }
+
+    // Call populateTagsFilter when the page loads
+    document.addEventListener('DOMContentLoaded', function() {
+        populateTagsFilter();
     });
     </script>
     <style>
