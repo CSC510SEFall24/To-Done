@@ -40,6 +40,7 @@
                     <input type="text" 
                            id="newListTag" 
                            placeholder="New List tag" 
+                           style="display: none;"
                            class="w-full px-4 py-2 text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                     
                     <button onclick="newTodoList()" 
@@ -113,7 +114,7 @@
                                     {% endif %}
                                 </a>
                             </h2>
-                            <form class="mb-4 space-y-4">
+                            <form class="mb-4 space-y-4" onsubmit="event.preventDefault(); newElement({{ list.id }});">
                                 <div class="space-y-4">
                                     <input type="text" id="InputText_{{ list.id }}" placeholder="New Task" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
                                     
@@ -129,23 +130,18 @@
                                         <div>
                                             <label for="InputPriority_{{ list.id }}" class="block text-sm font-medium text-gray-700">Priority</label>
                                             <select id="InputPriority_{{ list.id }}" onchange="updatePriorityColor(this)" class="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
-                                                <option value="HIGH">High</option>
-                                                <option value="MEDIUM" selected>Medium</option>
-                                                <option value="LOW">Low</option>
+                                                <option value="HIGH" style="background-color: #fecaca">High</option>
+                                                <option value="MEDIUM" selected style="background-color: #fde68a">Medium</option>
+                                                <option value="LOW" style="background-color: #bbf7d0">Low</option>
                                             </select>
                                         </div>
                                     </div>
                                     
-                                    <button onclick="newElement({{ list.id }})" class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                                    <button type="submit" class="w-full px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                                         Add Item
                                     </button>
                                 </div>
                             </form>
-                            <div class="mt-4 flex items-center justify-between">
-                                <button onclick="newElement({{ list.id }})" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
-                                    Add Item
-                                </button>
-                            </div>
                             <ul id="{{ "List_"|addstr:list.id }}" class="space-y-3 flex-grow mt-4">
                                 {% for list_item in list.items %}
                                     <li id="ListItem_{{ list_item.id }}" class="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
@@ -312,11 +308,10 @@
                                 <label for="edit-priority" class="block text-sm font-medium text-gray-700 mb-1">Priority</label>
                                 <select id="edit-priority" 
                                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-                                        style="background-color: #fde68a;">
-                                    <option value="" disabled selected>Priority (Medium default)</option>
-                                    <option value="HIGH" style="background-color: #fecaca">High Priority</option>
-                                    <option value="MEDIUM" style="background-color: #fde68a">Medium Priority</option>
-                                    <option value="LOW" style="background-color: #bbf7d0">Low Priority</option>
+                                        onchange="updatePriorityColor(this)">
+                                    <option value="MEDIUM" style="background-color: #fde68a">Medium</option>
+                                    <option value="HIGH" style="background-color: #fecaca">High</option>
+                                    <option value="LOW" style="background-color: #bbf7d0">Low</option>
                                 </select>
                             </div>
 
@@ -327,7 +322,9 @@
                             </div>
 
                             <div class="pt-4">
-                                <button type="submit" 
+                                <button type="button" 
+                                        id="save-edit-button"
+                                        onclick="saveEditChanges()"
                                         class="w-full bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                                     Save Changes
                                 </button>
@@ -623,6 +620,16 @@
             var httpRequest = new XMLHttpRequest();
             var today = new Date();
             var create_on_timestamp = today.getTime() / 1000;
+            
+            const data = {
+                "list_id": list_id,
+                "list_item_name": inputValue,
+                "item_text": inputNote,
+                "due_date": inputDue,
+                "priority": inputPriority,
+                "tag_list": inputTags
+            };
+
             httpRequest.onreadystatechange = function() {
                 if (httpRequest.readyState === XMLHttpRequest.DONE) {
                     if (httpRequest.status === 200) {
@@ -756,33 +763,25 @@
                                 inputBox.value = "";
                                 document.getElementById("InputNote_" + list_id).value = "";
                                 document.getElementById("InputDue_" + list_id).value = "";
-                                document.getElementById("InputPriority_" + list_id).value = "";
                                 document.getElementById("InputTags_" + list_id).value = "";
-                            } else {
-                                alert("Failed to add task. Please try again.");
+                                document.getElementById("InputPriority_" + list_id).value = "MEDIUM";
+                                updatePriorityColor(document.getElementById("InputPriority_" + list_id));
                             }
                         } catch (e) {
-                            console.error('Error parsing response:', e);
-                            alert('Failed to add task. Please try again.');
+                            console.error("Error parsing response:", e);
+                            alert("Error creating task. Please try again.");
                         }
                     } else {
-                        console.error('Failed to add task:', httpRequest.responseText);
-                        alert('Failed to add task. Please try again.');
+                        console.error("Server returned status:", httpRequest.status);
+                        alert("Error creating task. Please try again.");
                     }
                 }
             };
-            httpRequest.open('POST', '/addNewListItem');
-            httpRequest.setRequestHeader('Content-Type', "application/json;charset=UTF-8");
-            var params = {
-                "list_id": list_id,
-                "list_item_name": inputValue,
-                "item_text": inputNote,
-                "create_on": create_on_timestamp,
-                "due_date": inputDue,
-                "priority": inputPriority,
-                "tags": inputTags
-            };
-            httpRequest.send(JSON.stringify(params));
+
+            httpRequest.open('POST', '/addNewListItem', true);
+            httpRequest.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+            httpRequest.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+            httpRequest.send(JSON.stringify(data));
         }
     }
 
@@ -817,22 +816,34 @@
     }
 
     function toggleNewTagInput() {
-        var x = document.getElementById("listTags").value
-        if(x === 'new'){
-            document.getElementById("newListTag").type='text';
-        }else{
-            document.getElementById("newListTag").type='hidden';
+        var listTags = document.getElementById("listTags");
+        var newListTag = document.getElementById("newListTag");
+        
+        if (listTags.value === 'new') {
+            newListTag.style.display = 'block';
+            newListTag.focus();
+        } else {
+            newListTag.style.display = 'none';
+            newListTag.value = '';
         }
     }
+
+    // Initialize new tag input visibility
+    document.addEventListener('DOMContentLoaded', function() {
+        toggleNewTagInput();
+    });
 
     function importFromCSV(){
         httpRequest.open('POST', '/import_todo_csv');
     }
 
     function updatePriorityColor(selectElement) {
-        const selectedOption = selectElement.options[selectElement.selectedIndex];
-        const color = selectedOption.getAttribute('data-color');
-        selectElement.style.backgroundColor = color || '#fde68a'; // Default to medium priority color
+        const colors = {
+            'HIGH': '#fecaca',  // Light red
+            'MEDIUM': '#fde68a', // Light yellow
+            'LOW': '#bbf7d0'    // Light green
+        };
+        selectElement.style.backgroundColor = colors[selectElement.value] || '#fde68a'; // Default to medium priority color
     }
 
     // Initialize priority dropdowns with correct colors
@@ -840,6 +851,10 @@
         document.querySelectorAll('select[id^="InputPriority_"]').forEach(select => {
             updatePriorityColor(select);
         });
+        const editPriority = document.getElementById('edit-priority');
+        if (editPriority) {
+            updatePriorityColor(editPriority);
+        }
     });
 
     // Initialize sidebars
@@ -911,6 +926,39 @@
     document.addEventListener('DOMContentLoaded', function() {
         populateTagsFilter();
     });
+
+    function saveEditChanges() {
+        const itemId = document.getElementById('edit-item-id').value;
+        const title = document.getElementById('edit-title').value;
+        const note = document.getElementById('edit-note').value;
+        const dueDate = document.getElementById('edit-due-date').value;
+        const priority = document.getElementById('edit-priority').value;
+        const isDone = document.getElementById('edit-is-done').checked;
+
+        const data = {
+            title: title,
+            note: note,
+            due_date: dueDate,
+            priority: priority || 'MEDIUM', // Default to MEDIUM if not selected
+            is_done: isDone
+        };
+
+        const httpRequest = new XMLHttpRequest();
+        httpRequest.onreadystatechange = function() {
+            if (this.readyState === 4) {
+                if (this.status === 200) {
+                    location.reload();
+                } else {
+                    console.error('Failed to update item:', this.responseText);
+                }
+            }
+        };
+
+        httpRequest.open('POST', `/updateListItem/${itemId}`, true);
+        httpRequest.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+        httpRequest.setRequestHeader('X-CSRFToken', getCookie('csrftoken'));
+        httpRequest.send(JSON.stringify(data));
+    }
     </script>
     <style>
     #edit-sidebar {

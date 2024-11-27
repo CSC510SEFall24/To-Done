@@ -458,9 +458,8 @@ def addNewListItem(request):
         list_id = body['list_id']
         item_name = body['list_item_name']
         item_text = body.get('item_text', '')  # Get note text, default to empty string
-        create_on = body['create_on']
-        create_on_time = datetime.datetime.fromtimestamp(create_on)
-        finished_on_time = datetime.datetime.fromtimestamp(create_on)
+        create_on_time = datetime.datetime.now()
+        finished_on_time = create_on_time
         due_date = body['due_date']
         priority = body.get('priority', 'MEDIUM')  # Default to MEDIUM if not provided
         tags = []
@@ -475,7 +474,6 @@ def addNewListItem(request):
         print(f"list_id: {list_id}")
         print(f"item_name: {item_name}")
         print(f"item_text: {item_text}")
-        print(f"create_on: {create_on}")
         print(f"due_date: {due_date}")
         print(f"priority: {priority}")
         print(f"tags: {tags}")
@@ -485,7 +483,6 @@ def addNewListItem(request):
             return JsonResponse({'error': 'Invalid priority level', 'item_id': -1})
 
         print(item_name)
-        print(create_on)
         result_item_id = -1
         # create a new to-do list object and save it to the database
         try:
