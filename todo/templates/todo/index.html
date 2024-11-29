@@ -14,10 +14,10 @@
             <div class="p-6">
                 <!-- App Logo and Name -->
                 <div class="flex items-center space-x-2 mb-8">
-                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                     </svg>
-                    <h1 class="text-2xl font-bold text-gray-900">To-Done</h1>
+                    <a href="/" class="text-2xl font-bold hover:text-gray-200"><h1>To-Done</h1></a>
                 </div>
                 <!-- New Todo List Section -->
                 <div class="space-y-4">
@@ -87,7 +87,14 @@
         <div class="flex-1 overflow-auto">
             <!-- Top Navigation Bar -->
             <nav class="bg-white shadow-sm mb-8">
-                <div class="px-4 h-16 flex items-center justify-end">
+                <div class="px-4 h-16 flex items-center justify-between">
+                    <ul class="flex space-x-4">
+    
+                        <li><a class="tabs hover:text-gray-200" href="/todo">Lists</a></li>
+                        <li>
+                          <a class="tabs hover:text-gray-200" href="/templates">Templates</a>
+                        </li>
+                    </ul>
                     <a href="/logout" class="text-sm font-medium text-blue-600 hover:text-blue-500 flex items-center space-x-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
